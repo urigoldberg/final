@@ -13,25 +13,28 @@ KDArray* Init(SPPoint** arr, int size)  {
 		return NULL;
 	}
 
-	AllocateManager manager;
 
-	KDArray *res;
-
-
-	//create KDArray object
-	res = (KDArray*)malloc(sizeof(KDArray));
-	res = (KDArray*)MyMalloc(sizeof(KDArray),"KDArray*",manager);
+	KDArray *res = (KDArray*)malloc(sizeof(KDArray));
 	if (res == NULL) {
 		return NULL;
-	}
+		}
+
+	res->manager = (AllocateManager*)malloc(sizeof(AllocateManager));
+	if (res->manager == NULL) {
+		free(res);
+		return NULL;
+		}
 
 	res->dim = size;
 
 	//Copy the array that received in the init function
-	res->pointsArr = (SPPoint**)MyMalloc(sizeof(SPPoint*)*size,"SPPoint**",manager);
-	if (res == NULL) {
-			return NULL;
+	res->pointsArr = (SPPoint**)MyMalloc(sizeof(SPPoint*)*size,res->manager);
+	if (res->pointsArr == NULL) {
+		free(res);
+		return NULL;
 		}
+
+
 	for (int i = 0; i < size; i++) {
 		res->pointsArr[i] = spPointCopy(arr[i]); //To Be Checked Later
 	}
@@ -39,21 +42,23 @@ KDArray* Init(SPPoint** arr, int size)  {
 
 	// Create a dXn
 	int pointDim = spPointGetDimension(arr);
-	res->sortedMatrix = (double**)MyMalloc(pointDim*sizeof(double*),"double**",manager);
+	res->sortedMatrix = (double**)MyMalloc(pointDim*sizeof(double*),res->manager);
 	if (res->sortedMatrix == NULL) {
+		free(res);
 		return NULL;
 	}
 
 
 	tempRowForSort* tempRow  = (tempRowForSort*)malloc(size*sizeof(tempRowForSort));
 	if (tempRow == NULL) {
-		DestroyAll(manager);
+		DestroyAll(res->manager);
+		free(res);
 		return NULL;
 	}
 
 	for (int i = 0; i < pointDim; i++) {
 
-		res->sortedMatrix[i] = (double*)MyMalloc(sizeof(double)*pointDim,"double*",manager);
+		res->sortedMatrix[i] = (double*)MyMalloc(sizeof(double)*pointDim,res->manager);
 		if (res->sortedMatrix[i] == NULL) {
 			free(tempRow);
 			return NULL;
@@ -75,7 +80,7 @@ KDArray* Init(SPPoint** arr, int size)  {
 	}
 
 	//free resources
-	DestroyManager(manager);
+	DestroyAll(res->manager);
 	free(tempRow);
 
 	return res;

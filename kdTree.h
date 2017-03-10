@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "AllocateManager.h"
 #ifndef KDTREE_H_
 #define KDTREE_H_
 
@@ -15,6 +15,8 @@ typedef struct KDArray {
 	SPPoint **pointsArr;
 	double **sortedMatrix;
 	int dim;
+	AllocateManager *manager;
+
 } KDArray;
 
 /*

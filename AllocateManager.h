@@ -14,27 +14,9 @@
 
 typedef struct AllocateManager {
 
-	int IntArraySize;
-	int** IntArray;
-
-	int CharArraySize;
-	char** CharArray;
-
-	int DoubleArraySize;
-	double** DoubleArray;
-
-	int DoubleDoubleArraySize;
-	double*** DoubleDoubleArray;
-
-	int KdArraySize;
-	KDArray *KdArray;
-
-	int SPPointArrayArraySize;
-	SPPoint** SPPointArrayArray;
-
-	int SPPointArraySize;
-	SPPoint* SPPointArray;
-
+	int arraySize;
+	int numOfElements;
+	void **voidArray;
 
 } AllocateManager;
 
@@ -42,18 +24,7 @@ typedef struct AllocateManager {
  * instad of malloc
  */
 
-void* MyMalloc (size_t size, char* kindOfPty, AllocateManager manager);
-
-
-/*
- * 1 - array of integers
- * 2 - array of chars
- * 3 - array of double
- * 4 - array of array of double
- * 5 - KDArray
- * 6 - SPPointArrayArray
- * 7 - SPPointArray
- */
+void* MyMalloc (size_t size, AllocateManager manager);
 
 void DestroyAll (AllocateManager manager);
 
