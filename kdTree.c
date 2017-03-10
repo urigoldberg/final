@@ -20,7 +20,7 @@ KDArray* Init(SPPoint** arr, int size)  {
 
 	//create KDArray object
 	res = (KDArray*)malloc(sizeof(KDArray));
-//	res = (KDArray*)MyMalloc(sizeof(KDArray),"KDArray*",manager);
+	res = (KDArray*)MyMalloc(sizeof(KDArray),"KDArray*",manager);
 	if (res == NULL) {
 		return NULL;
 	}
