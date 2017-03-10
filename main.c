@@ -12,6 +12,6 @@ int main(int argc, char **argv) {
 		printf("point %d: (%d,%d)", i, data[0], data[1] );
 		pointArr[i] = spPointCreate(data, 2, i);
 	}
-	KDArray* kdArr = Init(pointArr, dim);
+	SPKDArray* kdArr = Init(pointArr, dim);
 
 }

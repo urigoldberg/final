@@ -11,13 +11,13 @@
 /*
  * STRUCTS:
  */
-typedef struct KDArray {
+typedef struct SPKDArray {
 	SPPoint **pointsArr;
 	double **sortedMatrix;
 	int dim;
-	AllocateManager *manager;
+	AllocateManager* manager;
 
-} KDArray;
+} SPKDArray;
 
 /*
 typedef struct KDTreeNode {
@@ -39,7 +39,7 @@ typedef struct tempRowForSort {
 } tempRowForSort;
 
 
-KDArray* Init(SPPoint** arr, int size);
+SPKDArray* Init(SPPoint** arr, int size);
 
 int SortByPointsIndex(const void* a,const void* b);
 

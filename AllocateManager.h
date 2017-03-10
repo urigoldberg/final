@@ -1,18 +1,17 @@
-#include "kdTree.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
 
 #ifndef ALLOCATEMANAGER_H_
 #define ALLOCATEMANAGER_H_
 
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /*
  * Documentation about this struct *
  */
 
-typedef struct AllocateManager {
+typedef struct allocate_manager {
 
 	int arraySize;
 	int numOfElements;
@@ -24,10 +23,10 @@ typedef struct AllocateManager {
  * instad of malloc
  */
 
-void* MyMalloc (size_t size, AllocateManager manager);
+void* MyMalloc (size_t size, AllocateManager* manager);
 
-void DestroyAll (AllocateManager manager);
+void DestroyAll (AllocateManager* manager);
 
-void DestroyManager(AllocateManager manager);
+void DestroyManager(AllocateManager * manager);
 
 #endif /* ALLOCATEMANAGER_H_ */
