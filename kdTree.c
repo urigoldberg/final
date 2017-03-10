@@ -1,11 +1,7 @@
 
-#ifndef _AllocateManagerh_
-#define _AllocateManagerh_
-#endif
-
-
-
-
+#include "kdTree.h"
+#include "SPPoint.h"
+#include "AllocateManager.h"
 #define POINTSNUMBER 3
 
 
@@ -23,7 +19,8 @@ KDArray* Init(SPPoint** arr, int size)  {
 
 
 	//create KDArray object
-	res = (KDArray*)MyMalloc(sizeof(KDArray),"KDArray*",manager);
+	res = (KDArray*)malloc(sizeof(KDArray));
+//	res = (KDArray*)MyMalloc(sizeof(KDArray),"KDArray*",manager);
 	if (res == NULL) {
 		return NULL;
 	}
@@ -31,12 +28,12 @@ KDArray* Init(SPPoint** arr, int size)  {
 	res->dim = size;
 
 	//Copy the array that received in the init function
-	res->pointsArr = (SPPoint**)MyMalloc(sizeof(SPPoint)*size,"SPPoint**",manager);
+	res->pointsArr = (SPPoint**)MyMalloc(sizeof(SPPoint*)*size,"SPPoint**",manager);
 	if (res == NULL) {
 			return NULL;
 		}
 	for (int i = 0; i < size; i++) {
-		res.pointsArr[i] = spPointCopy(arr[i]); //To Be Checked Later
+		res->pointsArr[i] = spPointCopy(arr[i]); //To Be Checked Later
 	}
 
 
@@ -73,7 +70,7 @@ KDArray* Init(SPPoint** arr, int size)  {
 
 		//update array with indexes after sorting
 		for (int k = 0; k < size; k++) {
-			res->sortedMatrix[i][k] =  tempRow[k]->indexOfOrig;
+			res->sortedMatrix[i][k] =  tempRow[k].indexOfOrig;
 		}
 	}
 

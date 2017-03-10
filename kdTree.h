@@ -1,13 +1,10 @@
-
-
-#ifndef _SPPointh__
-#define _SPPointh__
-#endif
-
+#include "SPPoint.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#ifndef KDTREE_H_
+#define KDTREE_H_
 
 #define POINTSNUMBER 3
 
@@ -27,21 +24,23 @@ typedef struct KDTreeNode {
 	KDTree Left;
 	KDTree Right;
 	SPPoint Data;
-} KDTreeNode;*\
+} KDTreeNode;
+*\
+
+/*
+ * Founctions
+ */
 
 typedef struct tempRowForSort {
 	double Coor;
 	int indexOfOrig;
 } tempRowForSort;
 
-/*
- * Founctions
- */
 
-KDArray Init(SPPoint** arr, int size);
+KDArray* Init(SPPoint** arr, int size);
 
 int SortByPointsIndex(const void* a,const void* b);
 
-
+#endif /* KDTREE_H_ */
 
 

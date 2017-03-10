@@ -77,7 +77,7 @@ void* MyMalloc (size_t size, char* kindOfPty, AllocateManager manager) {
 			DestroyAll(manager);
 			return NULL;
 				}
-		manager.KdArray[manager.KdArraySize-1] = (double*)resultptr;
+//		manager.KdArray[manager.KdArraySize-1] = (double*)resultptr;
 		}
 
 	else if (strcmp(kindOfPty, "SPPoint**") == 0)
@@ -95,7 +95,7 @@ void* MyMalloc (size_t size, char* kindOfPty, AllocateManager manager) {
 	else if (strcmp(kindOfPty, "SPPoint**") == 0)
 	{
 		manager.SPPointArraySize++;
-		manager.SPPointArray = (SPPoint*)realloc(manager.SPPointArray,manager.SPPointArraySize*sizeof(SPPoint));
+//		manager.SPPointArray = (SPPoint*)realloc(manager.SPPointArray,manager.SPPointArraySize*sizeof(SPPoint));
 		if (manager.SPPointArray == NULL) {
 			DestroyAll(manager);
 			return NULL;
@@ -104,7 +104,7 @@ void* MyMalloc (size_t size, char* kindOfPty, AllocateManager manager) {
 		}
 
 	}
-
+	return resultptr;
 }
 
 void DestroyAll (AllocateManager manager) {
@@ -131,7 +131,7 @@ void DestroyAll (AllocateManager manager) {
 
 	//destroy arrays of double arrays - to be checked
 	for (int i = 0; i < manager.KdArraySize; i++)
-		free(manager.KdArray[i]);
+//		free(manager.KdArray[i]);
 	free(manager.KdArray);
 
 	//destroy arrays of double arrays - to be checked

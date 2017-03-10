@@ -1,12 +1,10 @@
-
-#ifndef _kdTreeh_
-#define _kdTreeh_ //include SSPoint too..
-#endif
-
+#include "kdTree.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#ifndef ALLOCATEMANAGER_H_
+#define ALLOCATEMANAGER_H_
 
 
 
@@ -61,3 +59,4 @@ void DestroyAll (AllocateManager manager);
 
 void DestroyManager(AllocateManager manager);
 
+#endif /* ALLOCATEMANAGER_H_ */
