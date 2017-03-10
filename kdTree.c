@@ -25,7 +25,7 @@ SPKDArray* Init(SPPoint** arr, int size) {
 
 	//Copy the array that received in the init function
 	res->pointsArr = (SPPoint**) MyMalloc(sizeof(SPPoint*) * size,
-			res->manager);
+			res->manager,free);
 	if (res->pointsArr == NULL) {
 		free(res);
 		return NULL;
@@ -33,12 +33,16 @@ SPKDArray* Init(SPPoint** arr, int size) {
 
 	for (int i = 0; i < size; i++) {
 		res->pointsArr[i] = spPointCopy(arr[i]); //To Be Checked Later
+		if (AddParamWithoutAllocation((void*)(res->pointsArr[i]),DestroySPPoint,res->manager) != 0) {
+			free(res);
+			return NULL;
+		}
 	}
 
 	// Create a dXn
 	int pointDim = spPointGetDimension(arr);
 	res->sortedMatrix = (double**) MyMalloc(pointDim * sizeof(double*),
-			res->manager);
+			res->manager,free);
 	if (res->sortedMatrix == NULL) {
 		free(res);
 		return NULL;
@@ -55,7 +59,7 @@ SPKDArray* Init(SPPoint** arr, int size) {
 	for (int i = 0; i < pointDim; i++) {
 
 		res->sortedMatrix[i] = (double*) MyMalloc(sizeof(double) * pointDim,
-				res->manager);
+				res->manager,free);
 		if (res->sortedMatrix[i] == NULL) {
 			free(tempRow);
 			return NULL;
@@ -87,11 +91,16 @@ int SortByPointsIndex(const void* a, const void* b) {
 	return (First.Coor - Second.Coor);
 }
 
-int Split(SPKDArray kdArr, SPKDArray * left, SPKDArray * right, int coor) {
+int Split(SPKDArray* kdArr, SPKDArray * left, SPKDArray * right, int coor) {
+
+	//Asserts
 	if (kdArr == NULL || left == NULL || right == NULL) {
 		return 1;
 	}
 
+	AllocateManager founcManager;
+
+	//get dimention
 	int dim = kdArr->dim;
 	if (dim <= 0) {
 		return 1;
@@ -100,29 +109,71 @@ int Split(SPKDArray kdArr, SPKDArray * left, SPKDArray * right, int coor) {
 	if (kdArr->pointsArr == NULL || kdArr->pointsArr[0] == NULL) {
 		return 1;
 	}
-	int pointDim = kdArr->pointsArr[0]->dim;
 
+	int pointDim = spPointGetDimension(kdArr->pointsArr[0]);
+
+	//create left and right
 	int leftSize = dim % 2 == 0 ? dim / 2 : dim / 2 + 1;
 	int rightSize = dim - leftSize;
-	right = (SPKDArray*) malloc(sizeof(SPKDArray));
-	left = (SPKDArray*) malloc(sizeof(SPKDArray));
-	// TODO malloc check
 
-	right->manager = (AllocateManager*) malloc(sizeof(AllocateManager));
-	left->manager = (AllocateManager*) malloc(sizeof(AllocateManager));
+	right = (SPKDArray*)MyMalloc(sizeof(SPKDArray),&founcManager,free);
+	left = (SPKDArray*)MyMalloc(sizeof(SPKDArray),&founcManager,free);
 
-	left->pointsArr = (SPPoint*) malloc(sizeof(SPPoint) * leftSize);
-	right->pointsArr = (SPPoint*) malloc(sizeof(SPPoint) * rightSize);
+	//in case of memory leak
+	if (right == NULL || left == NULL) {
+		return 1;
+	}
+
+	right->manager = (AllocateManager*) MyMalloc(sizeof(AllocateManager),&founcManager,free);
+	left->manager = (AllocateManager*) MyMalloc(sizeof(AllocateManager),&founcManager,free);
+
+	//in case of memory leak
+	if (right->manager == NULL || left->manager == NULL) {
+		return 1;
+	}
+
+	left->pointsArr = (SPPoint**) MyMalloc(sizeof(SPPoint*) * leftSize,
+			left->manager,free);
+	right->pointsArr = (SPPoint**) MyMalloc(sizeof(SPPoint*) * rightSize,
+				right->manager,free);
+
+	//in case of memory leak
+	if (right->manager == NULL || left->manager == NULL) {
+		DestroyAll(&founcManager);
+		return 1;
+		}
+
 
 	for (int i = 0; i < leftSize; i++) {
-		left->pointsArr[i] = kdArr->pointsArr[kdArr->sortedMatrix[coor][i]];
-	};
+		left->pointsArr[i] = spPointCopy(kdArr->pointsArr[((int)(kdArr->sortedMatrix[coor][i]))]);
+
+		//In case of memory leak
+		if (AddParamWithoutAllocation((void*)(left->pointsArr[i]),DestroySPPoint,left->manager) != 0) {
+			DestroyAll(&founcManager);
+			return 1;
+			}
+	}
 	for (int i = 0; i < rightSize; i++) {
-		right->pointsArr[i] = kdArr->pointsArr[kdArr->sortedMatrix[coor][leftSize - 1 + i]];
-	};
+		right->pointsArr[i] = spPointCopy(kdArr->pointsArr[((int)(kdArr->sortedMatrix[coor][leftSize - 1 + i]))]);
+		//In case of memory leak
+		if (AddParamWithoutAllocation((void*)(right->pointsArr[i]),DestroySPPoint,right->manager) != 0) {
+			DestroyAll(&founcManager);
+			return 1;
+		}
+	}
 
-	left->sortedMatrix = (double**) malloc(sizeof(double*)*pointDim);
-	right->sortedMatrix = (double**) malloc(sizeof(double*)*pointDim)
+	left->sortedMatrix = (double**) MyMalloc(sizeof(double*)*pointDim,left->manager,free);
+	if (left->sortedMatrix == NULL) {
+		DestroyAll(&founcManager);
+		DestroyAll(right->manager);
+		return 1;
+	}
 
+	right->sortedMatrix = (double**) MyMalloc(sizeof(double*)*pointDim,right->manager,free);
+	if (right->sortedMatrix == NULL) {
+		DestroyAll(&founcManager);
+		DestroyAll(left->manager);
+		return 1;
+		}
 }
 
