@@ -1,10 +1,13 @@
 
 
+#ifndef _SPPointh__
+#define _SPPointh__
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
-#include "SPBPriorityQueue.h"
-#include "SPPoint.h"
-#include "AllocateManager.h"
+#include <string.h>
+
 
 #define POINTSNUMBER 3
 
@@ -12,25 +15,24 @@
  * STRUCTS:
  */
 typedef struct KDArray {
-	SPPoint **P;
-	double **A;
-	int size;
-
+	SPPoint **pointsArr;
+	double **sortedMatrix;
+	int dim;
 } KDArray;
 
-
+/*
 typedef struct KDTreeNode {
 	int Dim;
 	int Val;
 	KDTree Left;
 	KDTree Right;
 	SPPoint Data;
-} KDTreeNode;
+} KDTreeNode;*\
 
-typedef struct ForMatrixSort {
+typedef struct tempRowForSort {
 	double Coor;
 	int indexOfOrig;
-} ForMatrixSort;
+} tempRowForSort;
 
 /*
  * Founctions

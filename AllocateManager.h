@@ -1,15 +1,14 @@
-/*
- * AllocateManager.c
- *
- *  Created on: Mar 9, 2017
- *      Author: uri
- */
 
+#ifndef _kdTreeh_
+#define _kdTreeh_ //include SSPoint too..
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "kd_tree.h"
+
+
+
 
 /*
  * Documentation about this struct *

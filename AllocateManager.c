@@ -6,9 +6,8 @@
  */
 
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "AllocateManager.h"
+
 
 
 void* MyMalloc (size_t size, char* kindOfPty, AllocateManager manager) {
@@ -95,14 +94,12 @@ void* MyMalloc (size_t size, char* kindOfPty, AllocateManager manager) {
 
 	else if (strcmp(kindOfPty, "SPPoint**") == 0)
 	{
+		manager.SPPointArraySize++;
+		manager.SPPointArray = (SPPoint*)realloc(manager.SPPointArray,manager.SPPointArraySize*sizeof(SPPoint));
+		if (manager.SPPointArray == NULL) {
+			DestroyAll(manager);
+			return NULL;
 
-	}
-					manager.SPPointArraySize++;
-					manager.SPPointArray = (SPPoint*)realloc(manager.SPPointArray,manager.SPPointArraySize*sizeof(SPPoint));
-					if (manager.SPPointArray == NULL) {
-						DestroyAll(manager);
-						return NULL;
-						break;
 
 		}
 
