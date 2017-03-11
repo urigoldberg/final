@@ -95,7 +95,7 @@ SP_LOGGER_MSG spLoggerPrintInfo(const char* msg) {
 		return SP_LOGGER_INVAlID_ARGUMENT;
 	}
 	if (logger->level != SP_LOGGER_ERROR_LEVEL
-			|| logger->level != SP_LOGGER_WARNING_ERROR_LEVEL) {
+			&& logger->level != SP_LOGGER_WARNING_ERROR_LEVEL) {
 		if (fprintf(logger->outputChannel, "---INFO---\n- message: %s\n", msg)
 				< 0) {
 			return SP_LOGGER_WRITE_FAIL;
