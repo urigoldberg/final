@@ -66,9 +66,13 @@ int AddParamWithoutAllocation (void *elem, void (*comp)(void*), AllocateManager*
 
 void DestroyAll (AllocateManager * manager) {
 
+	//destroy each value that has been saved in the manager
 	for (int i = 0; i < manager->numOfElements; i++)
 		((void (*)(void*))manager->founcArray[i])(manager->voidArray[i]);
-	free(manager->voidArray);
+
+	//destroy manager itself
+	DestroyManager(manager);
+
 }
 
 void DestroySPPoint (void * point) {
@@ -81,4 +85,7 @@ void DestroyManager(AllocateManager* manager) {
 	free(manager->voidArray);
 	free(manager->founcArray);
 	free(manager);
+
+	//gives opportunity to free a manager more than once
+	manager = NULL;
 }

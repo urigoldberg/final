@@ -19,19 +19,14 @@ typedef struct SPKDArray {
 
 } SPKDArray;
 
-/*
-typedef struct KDTreeNode {
+
+ typedef struct KDTreeNode{
 	int Dim;
 	int Val;
-	KDTree Left;
-	KDTree Right;
-	SPPoint Data;
+	struct KDTreeNode *Left;
+	struct KDTreeNode *Right;
+	SPPoint *Data;
 } KDTreeNode;
-*\
-
-/*
- * Founctions
- */
 
 typedef struct tempRowForSort {
 	double Coor;
@@ -39,9 +34,23 @@ typedef struct tempRowForSort {
 } tempRowForSort;
 
 
+/*
+ * enums
+ */
+
+typedef enum spKDTreeSplitMethod  {RANDOM, MAX_SPREAD, INCREMENTAL } spKDTreeSplitMethod;
+
+/*
+ * Founctions
+ */
+
+
+
 SPKDArray* Init(SPPoint** arr, int size);
 
 int SortByPointsIndex(const void* a,const void* b);
+
+void DestroyKdTree (KDTreeNode* tree);
 
 #endif /* KDTREE_H_ */
 
