@@ -14,6 +14,7 @@
 
 typedef struct allocate_manager {
 
+	int isInit;
 	int arraySize;
 	int numOfElements;
 	void **voidArray;

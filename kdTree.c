@@ -13,18 +13,18 @@
  */
 
 void DestroyKdTreeNode (KDTreeNode* treeNode) {
-	free(treeNode->Data);
+	spPointDestroy(treeNode->Data);
 	free(treeNode->Left);
 	free(treeNode->Right);
 	free(treeNode);
 }
 
 void DestroyKdTree (KDTreeNode* tree) {
-	while (tree->Left != NULL) {
+	if (tree->Left != NULL) {
 		DestroyKdTree(tree->Left);
 	}
 
-	while (tree->Right != NULL) {
+	if (tree->Right != NULL) {
 			DestroyKdTree(tree->Right);
 		}
 	DestroyKdTreeNode(tree);
@@ -37,6 +37,10 @@ int GetRandomIndex (int dim) {
 }
 
 int FindMaxSpread (int columns, int rows, SPKDArray* kdArray) {
+	if (kdArray == NULL) {
+		return -1;
+	}
+
 	double max = -1;
 	int indexOfMax = -1;
 
@@ -112,7 +116,7 @@ SPKDArray* Init(SPPoint** arr, int size) {
 
 	// Create a dXn
 	int pointDim = spPointGetDimension(arr[0]);
-	res->sortedMatrix = (double**) MyMalloc(pointDim * sizeof(double*),
+	res->sortedMatrix = (int**) MyMalloc(pointDim * sizeof(int*),
 			res->manager,free);
 	if (res->sortedMatrix == NULL) {
 		free(res);
@@ -129,7 +133,7 @@ SPKDArray* Init(SPPoint** arr, int size) {
 
 	for (int i = 0; i < pointDim; i++) {
 
-		res->sortedMatrix[i] = (double*) MyMalloc(sizeof(double) * pointDim,
+		res->sortedMatrix[i] = (int*) MyMalloc(sizeof(int) * pointDim,
 				res->manager,free);
 		if (res->sortedMatrix[i] == NULL) {
 			free(res);
@@ -185,13 +189,13 @@ int Split(SPKDArray* kdArr, SPKDArray * left, SPKDArray * right, int coor) {
 	right = (SPKDArray*)MyMalloc(sizeof(SPKDArray),&founcManager,free);
 	left = (SPKDArray*)MyMalloc(sizeof(SPKDArray),&founcManager,free);
 
-	left->dim = leftSize;
-	right->dim = rightSize;
-
 	//in case of memory leak
 	if (right == NULL || left == NULL) {
 		return 1;
 	}
+
+	left->dim = leftSize;
+	right->dim = rightSize;
 
 	right->manager = (AllocateManager*) MyMalloc(sizeof(AllocateManager),&founcManager,free);
 	left->manager = (AllocateManager*) MyMalloc(sizeof(AllocateManager),&founcManager,free);
@@ -203,6 +207,8 @@ int Split(SPKDArray* kdArr, SPKDArray * left, SPKDArray * right, int coor) {
 
 	left->pointsArr = (SPPoint**) MyMalloc(sizeof(SPPoint*) * leftSize,
 			left->manager,free);
+
+	//TODO change mem check
 	right->pointsArr = (SPPoint**) MyMalloc(sizeof(SPPoint*) * rightSize,
 				right->manager,free);
 
@@ -216,7 +222,7 @@ int Split(SPKDArray* kdArr, SPKDArray * left, SPKDArray * right, int coor) {
 	//create map array - each index has
 	//if (map[i] > 0) - map[i] = point i in kdArr->pointsArr is in left kdarr with index  map[i]-1
 	//else - map[i] = point i in kdArr->pointsArr is in right kdarr with index  -(map[i]-1)
-	double *map = (double*) MyMalloc(sizeof(double) * pointDim,&founcManager,free);
+	int *map = (int*) MyMalloc(sizeof(int) * pointDim,&founcManager,free);
 	if (map == NULL) {
 		DestroyAll(right->manager);
 		DestroyAll(left->manager);
@@ -226,7 +232,7 @@ int Split(SPKDArray* kdArr, SPKDArray * left, SPKDArray * right, int coor) {
 
 	//create pointArr of left side + fill map with left element
 	for (int i = 0; i < leftSize; i++) {
-		int index = ((int)(kdArr->sortedMatrix[coor][i]));
+		int index = ((kdArr->sortedMatrix[coor][i]));
 		left->pointsArr[i] = spPointCopy(kdArr->pointsArr[index]);
 
 		map[index] = i+1;
@@ -240,7 +246,7 @@ int Split(SPKDArray* kdArr, SPKDArray * left, SPKDArray * right, int coor) {
 
 	//create pointArr of right side + fill map with left element
 	for (int i = 0; i < rightSize; i++) {
-		int index = ((int)(kdArr->sortedMatrix[coor][leftSize - 1 + i]));
+		int index = ((kdArr->sortedMatrix[coor][leftSize - 1 + i]));
 		right->pointsArr[i] = spPointCopy(kdArr->pointsArr[index]);
 
 		map[index] = -1*(i+1);
@@ -253,7 +259,7 @@ int Split(SPKDArray* kdArr, SPKDArray * left, SPKDArray * right, int coor) {
 	}
 
 	//create matrix left
-	left->sortedMatrix = (double**) MyMalloc(sizeof(double*)*pointDim,left->manager,free);
+	left->sortedMatrix = (int**) MyMalloc(sizeof(int*)*pointDim,left->manager,free);
 	if (left->sortedMatrix == NULL) {
 		DestroyAll(&founcManager);
 		DestroyAll(right->manager);
@@ -261,7 +267,7 @@ int Split(SPKDArray* kdArr, SPKDArray * left, SPKDArray * right, int coor) {
 	}
 
 	//create matrix right
-	right->sortedMatrix = (double**) MyMalloc(sizeof(double*)*pointDim,right->manager,free);
+	right->sortedMatrix = (int**) MyMalloc(sizeof(int*)*pointDim,right->manager,free);
 	if (right->sortedMatrix == NULL) {
 		DestroyAll(&founcManager);
 		DestroyAll(left->manager);
@@ -272,9 +278,9 @@ int Split(SPKDArray* kdArr, SPKDArray * left, SPKDArray * right, int coor) {
 	for (int i = 0; i < pointDim; i++) {
 
 		//allocate the i-th row
-		left->sortedMatrix[i] = (double*) MyMalloc(sizeof(double) * leftSize,
+		left->sortedMatrix[i] = (int*) MyMalloc(sizeof(int) * leftSize,
 				left->manager,free);
-		right->sortedMatrix[i] = (double*) MyMalloc(sizeof(double) * rightSize,
+		right->sortedMatrix[i] = (int*) MyMalloc(sizeof(int) * rightSize,
 				right->manager,free);
 
 		//in case of memory leak or i-th row doesnt exsists in the original kdArr
@@ -352,6 +358,7 @@ KDTreeNode* InitKdTreeFromKdArray (SPKDArray* kdArray, spKDTreeSplitMethod SpCri
 
 	//stop condition
 	if (kdArray->dim == 1) {
+		//TODO check if valid
 		return InitKdTreeNode(-1,-1,NULL,NULL,kdArray->pointsArr[0]);
 	}
 
@@ -389,7 +396,7 @@ KDTreeNode* InitKdTreeFromKdArray (SPKDArray* kdArray, spKDTreeSplitMethod SpCri
 
 
 	//create left tree
-	KDTreeNode* leftTree = InitKdTreeFromKdArray(leftArr,SpCriteria,forINCREMENTAL);
+	KDTreeNode* leftTree = InitKdTreeFromKdArray(leftArr,SpCriteria,i_thRow);
 	if (leftTree == NULL) {
 		free(res);
 		DestroyAll(leftArr->manager);
@@ -397,19 +404,50 @@ KDTreeNode* InitKdTreeFromKdArray (SPKDArray* kdArray, spKDTreeSplitMethod SpCri
 		return NULL;
 	}
 
-	KDTreeNode* rightTree = InitKdTreeFromKdArray(rightArr,SpCriteria,forINCREMENTAL);
+	KDTreeNode* rightTree = InitKdTreeFromKdArray(rightArr,SpCriteria,i_thRow);
 	if (rightTree == NULL) {
 		free(res);
 		DestroyAll(leftArr->manager);
 		DestroyAll(rightArr->manager);
-		DestroyTree(leftArr);
+		DestroyKdTree((KDTreeNode*)&leftArr);
 		return NULL;
 	}
 
 	DestroyAll(leftArr->manager);
 	DestroyAll(rightArr->manager);
 
-	return InitKdTreeNode(i_thRow,???,leftTree,rightTree,NULL);
+	return InitKdTreeNode(i_thRow,(int)leftArr->pointsArr[leftArr->dim-1],leftTree,rightTree,NULL);
+
+}
+//TODO init?? spKNN??
+void kNearestNeighbors (KDTreeNode* curr, BPQueueElement* bpq ,SPPoint* point) {
+	if (curr == NULL) {
+		return;
+	}
+
+	  /* Add the current point to the BPQ.  Note that this is a no-op if the
+	     point is not as good as the points we've seen so far.*/
+	if (curr->Data != NULL) {
+		//TODO are parameters right? check l2distance with that note
+		spBPQueueEnqueue(curr, curr->Dim, spPointL2SquaredDistance(curr->Data,point));
+		return;
+	}
+
+	/* Recursively search the half of the tree that contains the test point. */
+	int pointAtICoor = spPointGetAxisCoor(point,curr->Dim);
+
+	if(pointAtICoor <= curr->Val) {
+		kNearestNeighbors(curr->Left,bpq,point);
+	}
+
+	else {
+		kNearestNeighbors(curr->Right,bpq,point);
+	}
+
+	//TODO check
+	if (spBPQueueIsFull(bpq) || (curr->Val - pointAtICoor)*(curr->Val - pointAtICoor)) {
+		//TODO what should we search for?
+	}
 
 }
 

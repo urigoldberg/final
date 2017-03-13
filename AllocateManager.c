@@ -19,6 +19,13 @@ void* MyMalloc (size_t size, AllocateManager* manager, void (*comp)(void*)) {
 		return NULL;
 	}
 
+	//for first use of manager
+	if (!(manager->isInit)) {
+		manager->isInit = 1;
+		manager->founcArray = NULL;
+		manager->voidArray = NULL;
+	}
+
 	manager->numOfElements++;
 
 	if (manager->numOfElements >= manager->arraySize/2) {

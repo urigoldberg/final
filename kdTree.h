@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "SPBPriorityQueue.h"
 #include "AllocateManager.h"
 #ifndef KDTREE_H_
 #define KDTREE_H_
@@ -13,7 +14,7 @@
  */
 typedef struct SPKDArray {
 	SPPoint **pointsArr;
-	double **sortedMatrix;
+	int **sortedMatrix;
 	int dim;
 	AllocateManager* manager;
 
