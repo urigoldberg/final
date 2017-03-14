@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+#include "kdTree.h"
 #include "SPLogger.h"
 
 /**
@@ -26,11 +27,11 @@ typedef enum sp_config_msg_t {
 	SP_CONFIG_SUCCESS
 } SP_CONFIG_MSG;
 
-typedef enum kd_tree_split_method {
+/*typedef enum kd_tree_split_method {
 	RANDOM,
 	MAX_SPREAD,
 	INCREMENTAL,
-} SP_KD_TREE_SPLIT_METHOD;
+} SP_KD_TREE_SPLIT_METHOD;*/
 
 //typedef struct sp_config_t* SPConfig;
 
@@ -44,7 +45,7 @@ typedef struct sp_config_t {
 	int spNumOfFeatures;
 	bool spExtractionMode;
 	int spNumOfSimilarImages;
-	SP_KD_TREE_SPLIT_METHOD spKDTreeSplitMethod;
+	spKDTreeSplitMethod spKDTreeSplitMethod;
 	int spKNN;
 	bool spMinimalGUI;
 	int spLoggerLevel;

@@ -27,11 +27,11 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg) {
 }
 
 
-int handleLine(SPConfig*, char* line) {
+//int handleLine(SPConfig*, char* line) {
 
-}
+//}
 
-int main(int argc, char **argv) {
-	spConfigCreate(NULL, NULL);
-}
+//int main(int argc, char **argv) {
+	//spConfigCreate(NULL, NULL);
+//}
 

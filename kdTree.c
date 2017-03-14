@@ -419,8 +419,11 @@ KDTreeNode* InitKdTreeFromKdArray (SPKDArray* kdArray, spKDTreeSplitMethod SpCri
 	return InitKdTreeNode(i_thRow,(int)leftArr->pointsArr[leftArr->dim-1],leftTree,rightTree,NULL);
 
 }
-//TODO init?? spKNN??
+//TODO bpq will be initilaize outside
 void kNearestNeighbors (KDTreeNode* curr, BPQueueElement* bpq ,SPPoint* point) {
+
+	bool searchedLeftTree = false;
+
 	if (curr == NULL) {
 		return;
 	}
@@ -437,6 +440,7 @@ void kNearestNeighbors (KDTreeNode* curr, BPQueueElement* bpq ,SPPoint* point) {
 	int pointAtICoor = spPointGetAxisCoor(point,curr->Dim);
 
 	if(pointAtICoor <= curr->Val) {
+		searchedLeftTree = true;
 		kNearestNeighbors(curr->Left,bpq,point);
 	}
 
@@ -446,7 +450,18 @@ void kNearestNeighbors (KDTreeNode* curr, BPQueueElement* bpq ,SPPoint* point) {
 
 	//TODO check
 	if (spBPQueueIsFull(bpq) || (curr->Val - pointAtICoor)*(curr->Val - pointAtICoor)) {
-		//TODO what should we search for?
+
+		//
+		if (searchedLeftTree)
+		{
+			kNearestNeighbors(curr->Right,bpq,point);
+		}
+
+		else
+		{
+			kNearestNeighbors(curr->Left,bpq,point);
+		}
+
 	}
 
 }
