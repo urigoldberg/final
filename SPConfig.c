@@ -152,8 +152,8 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg) {
 	}
 	return res;
 }
-
+/*
 int main(int argc, char **argv) {
 	spConfigCreate(NULL, NULL);
-}
+}*/
 
