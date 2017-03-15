@@ -2,7 +2,7 @@
 
 #define DELIM "="
 
-void insertToConfig(char key[MAXBUF], char value[MAXBUF], SPConfig* configObj) {
+void insertToConfig(char key[MAXBUF], char value[MAXBUF], SPConfig configObj) {
 	if (strcmp(key, "spImagesDirectory") == 0) {
 		strcpy(configObj->spImagesDirectory, value);
 		return;
@@ -86,7 +86,7 @@ void printDefaultValueError(char* line, char* file, char* paramName) {
 }
 
 
-int handleLine(SPConfig* config, char* line) {
+int handleLine(SPConfig config, char* line) {
 	char lineNoSpaces[MAXBUF];
 	char key[MAXBUF];
 	char tmpLine[MAXBUF];
@@ -148,7 +148,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg) {
 		return NULL;
 	}
 	while (fgets(line, sizeof(line), configFile)) {
-		handleLine(&res, line);
+		handleLine(res, line);
 	}
 	return res;
 }
