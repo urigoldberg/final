@@ -269,11 +269,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg) {
 	res->spLoggerLevel = 3;
 	strcpy(res->spLoggerFilename, "stdout");
 
-	if (!filename) {
-		configFile = fopen("spcbir.config", "r");
-	} else {
-		configFile = fopen(filename, "r");
-	}
+	configFile = fopen(filename, "r");
 
 	if (configFile == NULL) {
 		*msg = SP_CONFIG_CANNOT_OPEN_FILE;
