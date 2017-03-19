@@ -12,7 +12,20 @@
  ***************
  */
 
+void DestroyManager(AllocateManager* manager) {
+	free(manager->voidArray);
+	free(manager->founcArray);
+	manager->arraySize = 0;
+	manager->isInit = 0;
+	free(manager);
+
+	//gives opportunity to free a manager more than once
+	manager = NULL;
+}
+
 void DestroyKdTreeNode (KDTreeNode* treeNode) {
+	if (treeNode == NULL)
+		return;
 	spPointDestroy(treeNode->Data);
 	free(treeNode->Left);
 	free(treeNode->Right);
@@ -30,6 +43,48 @@ void DestroyKdTree (KDTreeNode* tree) {
 	DestroyKdTreeNode(tree);
 
 }
+
+void DestroyKDArray (SPKDArray* arr,int numOfPoints) {
+	if (arr == NULL || numOfPoints == 0) {
+		return;
+	}
+
+	int dim = 0;
+
+	if (arr->pointsArr == NULL) {
+		free(arr);
+		return;
+	}
+
+	dim = spPointGetDimension(arr->pointsArr[0]);
+	DestroySppointArray(arr->pointsArr, numOfPoints);
+	free(arr->pointsArr);
+
+	if (arr->sortedMatrix != NULL) {
+		for (int i = 0; i < dim; i++) {
+			free(&arr->sortedMatrix[i]); //TODO check this kind of free. regular dosent work
+		}
+
+		free(arr->sortedMatrix);
+	}
+
+	free(arr);
+}
+
+void DestroySppointArray(SPPoint** pointArr, int howmanypoints) {
+
+	if (pointArr == NULL)
+	{
+		return;
+	}
+
+	for (int i = 0 ; i < howmanypoints ; i ++) {
+		spPointDestroy(pointArr[i]);
+	}
+
+	free(pointArr);
+}
+
 
 int GetRandomIndex (int dim) {
 	srand(time(NULL));
@@ -85,64 +140,54 @@ SPKDArray* Init(SPPoint** arr, int size) {
 		return NULL;
 	}
 
-	SPKDArray *res = (SPKDArray*) malloc(sizeof(SPKDArray));
-	if (res == NULL) {
-		return NULL;
-	}
 
-	res->manager = (AllocateManager*) malloc(sizeof(AllocateManager));
-	if (res->manager == NULL) {
-		free(res);
+	SPKDArray *res = (SPKDArray*) calloc(1,sizeof(SPKDArray));
+	if (res == NULL) {
 		return NULL;
 	}
 
 	res->dim = size;
 
 	//Copy the array that received in the init function
-	res->pointsArr = (SPPoint**) MyMalloc(sizeof(SPPoint*) * size,
-			res->manager,free);
+	res->pointsArr = (SPPoint**) calloc(size,sizeof(SPPoint*));
 	if (res->pointsArr == NULL) {
-		free(res);
+		DestroyKDArray(res, size);
 		return NULL;
 	}
 
 	for (int i = 0; i < size; i++) {
-		res->pointsArr[i] = spPointCopy(arr[i]); //To Be Checked Later
-		if (AddParamWithoutAllocation((void*)(res->pointsArr[i]),DestroySPPoint,res->manager) != 0) {
-			free(res);
+		res->pointsArr[i] = spPointCopy(arr[i]);
+		if (res->pointsArr[i] == NULL) {
+			DestroyKDArray(res, size);
 			return NULL;
 		}
 	}
 
 	// Create a dXn
 	int pointDim = spPointGetDimension(arr[0]);
-	res->sortedMatrix = (int**) MyMalloc(pointDim * sizeof(int*),
-			res->manager,free);
+	res->sortedMatrix = (int**) calloc(pointDim , sizeof(int*));
 	if (res->sortedMatrix == NULL) {
-		free(res);
+		DestroyKDArray(res, size);
 		return NULL;
 	}
 
-	tempRowForSort* tempRow = (tempRowForSort*) malloc(
-			size * sizeof(tempRowForSort));
+	tempRowForSort* tempRow = (tempRowForSort*) calloc(size, sizeof(tempRowForSort));
 	if (tempRow == NULL) {
-		DestroyAll(res->manager);
-		free(res);
+		DestroyKDArray(res, size);
 		return NULL;
 	}
 
 	for (int i = 0; i < pointDim; i++) {
 
-		res->sortedMatrix[i] = (int*) MyMalloc(sizeof(int) * pointDim,
-				res->manager,free);
+		res->sortedMatrix[i] = (int*) calloc(pointDim,sizeof(int));
 		if (res->sortedMatrix[i] == NULL) {
-			free(res);
+			DestroyKDArray(res, size);
 			free(tempRow);
 			return NULL;
 		}
 
 		for (int j = 0; j < size; j++) {
-			tempRow[j].Coor = spPointGetAxisCoor(arr[j], i); //to be checked later...
+			tempRow[j].Coor = spPointGetAxisCoor(arr[j], i);
 			tempRow[j].indexOfOrig = j;
 		}
 
@@ -161,14 +206,12 @@ SPKDArray* Init(SPPoint** arr, int size) {
 	return res;
 }
 
-int Split(SPKDArray* kdArr, SPKDArray * left, SPKDArray * right, int coor) {
+int Split(SPKDArray* kdArr, SPKDArray ** left, SPKDArray ** right, int coor) {
 
 	//Asserts
 	if (kdArr == NULL) {
 		return 1;
 	}
-
-	AllocateManager founcManager;
 
 	//get dimention
 	int dim = kdArr->dim;
@@ -186,35 +229,27 @@ int Split(SPKDArray* kdArr, SPKDArray * left, SPKDArray * right, int coor) {
 	int leftSize = dim % 2 == 0 ? dim / 2 : dim / 2 + 1;
 	int rightSize = dim - leftSize;
 
-	right = (SPKDArray*)MyMalloc(sizeof(SPKDArray),&founcManager,free);
-	left = (SPKDArray*)MyMalloc(sizeof(SPKDArray),&founcManager,free);
+	*right = (SPKDArray*)calloc(1,sizeof(SPKDArray));
+	*left = (SPKDArray*)calloc(1,sizeof(SPKDArray));
 
 	//in case of memory leak
-	if (right == NULL || left == NULL) {
+	if (*right == NULL || *left == NULL) {
+		DestroyKDArray(*right, rightSize);
+		DestroyKDArray(*left, leftSize);
 		return 1;
 	}
 
-	left->dim = leftSize;
-	right->dim = rightSize;
+	(*left)->dim = leftSize;
+	(*right)->dim = rightSize;
 
-	right->manager = (AllocateManager*) MyMalloc(sizeof(AllocateManager),&founcManager,free);
-	left->manager = (AllocateManager*) MyMalloc(sizeof(AllocateManager),&founcManager,free);
 
-	//in case of memory leak
-	if (right->manager == NULL || left->manager == NULL) {
-		return 1;
-	}
-
-	left->pointsArr = (SPPoint**) MyMalloc(sizeof(SPPoint*) * leftSize,
-			left->manager,free);
-
-	//TODO change mem check
-	right->pointsArr = (SPPoint**) MyMalloc(sizeof(SPPoint*) * rightSize,
-				right->manager,free);
+	(*left)->pointsArr = (SPPoint**) calloc(leftSize,sizeof(SPPoint*));
+	(*right)->pointsArr = (SPPoint**) calloc(rightSize,sizeof(SPPoint*));
 
 	//in case of memory leak
-	if (right->manager == NULL || left->manager == NULL) {
-		DestroyAll(&founcManager);
+	if ((*right)->pointsArr == NULL || (*left)->pointsArr == NULL) {
+		DestroyKDArray(*right, rightSize);
+		DestroyKDArray(*left, leftSize);
 		return 1;
 		}
 
@@ -222,10 +257,10 @@ int Split(SPKDArray* kdArr, SPKDArray * left, SPKDArray * right, int coor) {
 	//create map array - each index has
 	//if (map[i] > 0) - map[i] = point i in kdArr->pointsArr is in left kdarr with index  map[i]-1
 	//else - map[i] = point i in kdArr->pointsArr is in right kdarr with index  -(map[i]-1)
-	int *map = (int*) MyMalloc(sizeof(int) * pointDim,&founcManager,free);
+	int *map = (int*) calloc(dim,sizeof(int));
 	if (map == NULL) {
-		DestroyAll(right->manager);
-		DestroyAll(left->manager);
+		DestroyKDArray(*right, rightSize);
+		DestroyKDArray(*left, leftSize);
 		return 1;
 		}
 
@@ -233,13 +268,15 @@ int Split(SPKDArray* kdArr, SPKDArray * left, SPKDArray * right, int coor) {
 	//create pointArr of left side + fill map with left element
 	for (int i = 0; i < leftSize; i++) {
 		int index = ((kdArr->sortedMatrix[coor][i]));
-		left->pointsArr[i] = spPointCopy(kdArr->pointsArr[index]);
+		(*left)->pointsArr[i] = spPointCopy(kdArr->pointsArr[index]);
 
 		map[index] = i+1;
 
 		//In case of memory leak
-		if (AddParamWithoutAllocation((void*)(left->pointsArr[i]),DestroySPPoint,left->manager) != 0) {
-			DestroyAll(&founcManager);
+		if ((*left)->pointsArr[i] == NULL) {
+			free(map);
+			DestroyKDArray(*right, rightSize);
+			DestroyKDArray(*left, leftSize);
 			return 1;
 			}
 	}
@@ -247,30 +284,34 @@ int Split(SPKDArray* kdArr, SPKDArray * left, SPKDArray * right, int coor) {
 	//create pointArr of right side + fill map with left element
 	for (int i = 0; i < rightSize; i++) {
 		int index = ((kdArr->sortedMatrix[coor][leftSize - 1 + i]));
-		right->pointsArr[i] = spPointCopy(kdArr->pointsArr[index]);
+		(*right)->pointsArr[i] = spPointCopy(kdArr->pointsArr[index]);
 
 		map[index] = -1*(i+1);
 
 		//In case of memory leak
-		if (AddParamWithoutAllocation((void*)(right->pointsArr[i]),DestroySPPoint,right->manager) != 0) {
-			DestroyAll(&founcManager);
+		if ((*right)->pointsArr[i] == NULL) {
+			free(map);
+			DestroyKDArray(*right, rightSize);
+			DestroyKDArray(*left, leftSize);
 			return 1;
 		}
 	}
 
 	//create matrix left
-	left->sortedMatrix = (int**) MyMalloc(sizeof(int*)*pointDim,left->manager,free);
-	if (left->sortedMatrix == NULL) {
-		DestroyAll(&founcManager);
-		DestroyAll(right->manager);
+	(*left)->sortedMatrix = (int**) calloc(pointDim,sizeof(int*));
+	if ((*left)->sortedMatrix == NULL) {
+		free(map);
+		DestroyKDArray(*right, rightSize);
+		DestroyKDArray(*left, leftSize);
 		return 1;
 	}
 
 	//create matrix right
-	right->sortedMatrix = (int**) MyMalloc(sizeof(int*)*pointDim,right->manager,free);
-	if (right->sortedMatrix == NULL) {
-		DestroyAll(&founcManager);
-		DestroyAll(left->manager);
+	(*right)->sortedMatrix = (int**) calloc(pointDim,sizeof(int*));
+	if ((*right)->sortedMatrix == NULL) {
+		free(map);
+		DestroyKDArray(*right, rightSize);
+		DestroyKDArray(*left, leftSize);
 		return 1;
 		}
 
@@ -278,16 +319,14 @@ int Split(SPKDArray* kdArr, SPKDArray * left, SPKDArray * right, int coor) {
 	for (int i = 0; i < pointDim; i++) {
 
 		//allocate the i-th row
-		left->sortedMatrix[i] = (int*) MyMalloc(sizeof(int) * leftSize,
-				left->manager,free);
-		right->sortedMatrix[i] = (int*) MyMalloc(sizeof(int) * rightSize,
-				right->manager,free);
+		(*left)->sortedMatrix[i] = (int*) calloc(leftSize,sizeof(int));
+		(*right)->sortedMatrix[i] = (int*) calloc(rightSize,sizeof(int) );
 
 		//in case of memory leak or i-th row doesnt exsists in the original kdArr
-		if (left->sortedMatrix[i] == NULL || right->sortedMatrix[i] == NULL || kdArr->sortedMatrix[i] == NULL) {
-			DestroyAll(&founcManager);
-			DestroyAll(left->manager);
-			DestroyAll(right->manager);
+		if ((*left)->sortedMatrix[i] == NULL || (*right)->sortedMatrix[i] == NULL || kdArr->sortedMatrix[i] == NULL) {
+			free(map);
+			DestroyKDArray(*right, rightSize);
+			DestroyKDArray(*left, leftSize);
 			return 1;
 		}
 
@@ -302,21 +341,24 @@ int Split(SPKDArray* kdArr, SPKDArray * left, SPKDArray * right, int coor) {
 			//point in left array
 			if (afterMapCheck > 0) {
 				afterMapCheck = afterMapCheck - 1;
-				left->sortedMatrix[i][whereInLeft] = afterMapCheck;
+				(*left)->sortedMatrix[i][whereInLeft] = afterMapCheck;
 				whereInLeft++;
 			}
 
 			//point in right array
 			else {
 				afterMapCheck = (-1*afterMapCheck) - 1;
-				right->sortedMatrix[i][whereInRight] = afterMapCheck;
+				(*right)->sortedMatrix[i][whereInRight] = afterMapCheck;
 				whereInRight++;
 			}
 		}
 	}
-
+	for(int i=0;i<pointDim;i++){
+		printf("%d\n",map[i]);
+		//printf(map[i]);
+		printf("\n");
+	}
 	free(map);
-	DestroyManager(&founcManager);
 	return 0;
 }
 
@@ -330,7 +372,7 @@ int Split(SPKDArray* kdArr, SPKDArray * left, SPKDArray * right, int coor) {
 
 KDTreeNode* InitKdTreeNode(int Dim,int Val, KDTreeNode *Left,KDTreeNode *Right,SPPoint* Data){
 
-	KDTreeNode *res = (KDTreeNode*) malloc(sizeof(KDTreeNode));
+	KDTreeNode *res = (KDTreeNode*) calloc(1,sizeof(KDTreeNode));
 	if (res == NULL) {
 		return NULL;
 	}
@@ -379,18 +421,13 @@ KDTreeNode* InitKdTreeFromKdArray (SPKDArray* kdArray, spKDTreeSplitMethod SpCri
 	}
 
 	//create tree
-	KDTreeNode* res = (KDTreeNode*)malloc(sizeof(KDTreeNode));
-	if (res == NULL) {
-		return NULL;
-	}
 
 	//split KDArray
 	SPKDArray * leftArr = NULL;
 	SPKDArray * rightArr = NULL;
 
 	//split did not succeeded
-	if (Split(kdArray, leftArr, rightArr, i_thRow)) {
-		free(res);
+	if (Split(kdArray, &leftArr, &rightArr, i_thRow)) {
 		return NULL;
 	}
 
@@ -398,25 +435,30 @@ KDTreeNode* InitKdTreeFromKdArray (SPKDArray* kdArray, spKDTreeSplitMethod SpCri
 	//create left tree
 	KDTreeNode* leftTree = InitKdTreeFromKdArray(leftArr,SpCriteria,i_thRow);
 	if (leftTree == NULL) {
-		free(res);
-		DestroyAll(leftArr->manager);
-		DestroyAll(rightArr->manager);
+		DestroyKDArray(rightArr, rightArr->dim);
+		DestroyKDArray(leftArr, leftArr->dim);
 		return NULL;
 	}
 
 	KDTreeNode* rightTree = InitKdTreeFromKdArray(rightArr,SpCriteria,i_thRow);
 	if (rightTree == NULL) {
-		free(res);
-		DestroyAll(leftArr->manager);
-		DestroyAll(rightArr->manager);
-		DestroyKdTree((KDTreeNode*)&leftArr);
+		DestroyKDArray(rightArr, rightArr->dim);
+		DestroyKDArray(leftArr, leftArr->dim);
+		DestroyKdTree(leftTree);
 		return NULL;
 	}
 
-	DestroyAll(leftArr->manager);
-	DestroyAll(rightArr->manager);
+	KDTreeNode* res = InitKdTreeNode(i_thRow,(int)leftArr->pointsArr[leftArr->dim-1],leftTree,rightTree,NULL);
 
-	return InitKdTreeNode(i_thRow,(int)leftArr->pointsArr[leftArr->dim-1],leftTree,rightTree,NULL);
+	if (res == NULL) {
+		DestroyKDArray(rightArr, rightArr->dim);
+		DestroyKDArray(leftArr, leftArr->dim);
+		DestroyKdTree(leftTree);
+		DestroyKdTree(rightTree);
+		return NULL;
+	}
+
+	return res;
 
 }
 //TODO bpq will be initilaize outside
