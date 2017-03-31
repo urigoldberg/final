@@ -56,13 +56,17 @@ void DestroyKDArray (SPKDArray* arr,int numOfPoints) {
 		return;
 	}
 
+	if (arr->pointsArr[0] == NULL) {
+		free(arr->pointsArr);
+		free(arr);
+		return;
+	}
 	dim = spPointGetDimension(arr->pointsArr[0]);
 	DestroySppointArray(arr->pointsArr, numOfPoints);
-	free(arr->pointsArr);
 
 	if (arr->sortedMatrix != NULL) {
 		for (int i = 0; i < dim; i++) {
-			free(&arr->sortedMatrix[i]); //TODO check this kind of free. regular dosent work
+			free(arr->sortedMatrix[i]); //TODO check this kind of free. regular dosent work
 		}
 
 		free(arr->sortedMatrix);
