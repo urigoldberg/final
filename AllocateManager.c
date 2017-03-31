@@ -89,12 +89,8 @@ void DestroySPPoint (void * point) {
 	return;
 }
 
-
-void DestroyManager(AllocateManager* manager) {
-	free(manager->voidArray);
-	free(manager->founcArray);
-	free(manager);
-
-	//gives opportunity to free a manager more than once
-	manager = NULL;
+void DestroyFree (void * ptr) {
+	free(ptr);
+	printf("desdes");
 }
+

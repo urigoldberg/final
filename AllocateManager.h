@@ -38,6 +38,10 @@ void DestroyAll (AllocateManager* manager);
 
 void DestroyManager(AllocateManager* manager);
 
+void DestroyFree (void * ptr);
+
 void DestroySPPoint (void * point);
+
+void DestroySppointArray(SPPoint** pointArr, int howmanypoints);
 
 #endif /* ALLOCATEMANAGER_H_ */
