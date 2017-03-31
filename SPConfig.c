@@ -360,7 +360,7 @@ SP_CONFIG_MSG spConfigGetImagePath(char* imagePath, const SPConfig config,
 		char indexString[MAXBUF];
 		strcat(res, config->spImagesDirectory);
 		strcat(res, config->spImagesPrefix);
-		itoa(index, indexString, 10);
+		sprintf(indexString, "%d", index);
 		strcat(res, indexString);
 		strcat(res, config->spImagesSuffix);
 		strcpy(imagePath, res);

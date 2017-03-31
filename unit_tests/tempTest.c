@@ -195,14 +195,14 @@ int Split_test() {
 		DestroyKDArray(firstKDDrray, firstKDDrray->dim);
 		return 0;
 }
-
-int main() {
-	printf("start\n");
-	if (Split_test()==0){
-		printf("good");
-	}
-	else {
-		printf("bad");
-	}
-	printf("end\n");
-}
+//
+//int main() {
+//	printf("start\n");
+//	if (Split_test()==0){
+//		printf("good");
+//	}
+//	else {
+//		printf("bad");
+//	}
+//	printf("end\n");
+//}
