@@ -297,3 +297,96 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg) {
 	}
 
 }
+
+bool spConfigIsExtractionMode(const SPConfig config, SP_CONFIG_MSG* msg) {
+	if (config == NULL) {
+		*msg = SP_CONFIG_INVALID_ARGUMENT;
+		return false;
+	} else {
+		*msg = SP_CONFIG_SUCCESS;
+		return config->spExtractionMode;
+	}
+
+}
+
+bool spConfigMinimalGui(const SPConfig config, SP_CONFIG_MSG* msg) {
+	if (config == NULL) {
+		*msg = SP_CONFIG_INVALID_ARGUMENT;
+		return false;
+	} else {
+		*msg = SP_CONFIG_SUCCESS;
+		return config->spMinimalGUI;
+	}
+}
+
+int spConfigGetNumOfImages(const SPConfig config, SP_CONFIG_MSG* msg) {
+	if (config == NULL) {
+		*msg = SP_CONFIG_INVALID_ARGUMENT;
+		return -1;
+	} else {
+		*msg = SP_CONFIG_SUCCESS;
+		return config->spNumOfImages;
+	}
+}
+
+int spConfigGetNumOfFeatures(const SPConfig config, SP_CONFIG_MSG* msg){
+	if (config == NULL) {
+		*msg = SP_CONFIG_INVALID_ARGUMENT;
+		return -1;
+	} else {
+		*msg = SP_CONFIG_SUCCESS;
+		return config->spNumOfFeatures;
+	}
+}
+
+int spConfigGetPCADim(const SPConfig config, SP_CONFIG_MSG* msg){
+	if (config == NULL) {
+		*msg = SP_CONFIG_INVALID_ARGUMENT;
+		return -1;
+	} else {
+		*msg = SP_CONFIG_SUCCESS;
+		return config->spPCADimension;
+	}
+}
+
+SP_CONFIG_MSG spConfigGetImagePath(char* imagePath, const SPConfig config,
+		int index) {
+	if (imagePath == NULL || config == NULL) {
+		return SP_CONFIG_INVALID_ARGUMENT;
+	} else if (index >= config->spNumOfImages){
+		return SP_CONFIG_INDEX_OUT_OF_RANGE;
+	} else {
+		char res[MAXBUF];
+		char indexString[MAXBUF];
+		strcat(res, config->spImagesDirectory);
+		strcat(res, config->spImagesPrefix);
+		itoa(index, indexString, 10);
+		strcat(res, indexString);
+		strcat(res, config->spImagesSuffix);
+		strcpy(imagePath, res);
+		return SP_CONFIG_SUCCESS;
+	}
+}
+
+SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config){
+	if (pcaPath == NULL || config == NULL) {
+			return SP_CONFIG_INVALID_ARGUMENT;
+		} else {
+			char res[MAXBUF];
+			strcat(res, config->spImagesDirectory);
+			strcat(res, config->spPCAFilename);
+			strcpy(pcaPath, res);
+			return SP_CONFIG_SUCCESS;
+		}
+}
+
+void spConfigDestroy(SPConfig config) {
+	free(config);
+}
+
+
+
+
+
+
+
