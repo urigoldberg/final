@@ -15,7 +15,6 @@ typedef struct SPKDArray {
 	SPPoint **pointsArr;
 	int **sortedMatrix;
 	int dim;
-	int* manager;
 
 } SPKDArray;
 
