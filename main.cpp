@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
 //    sp::ImageProc *imageProc = NULL;
     char query[1024];
     char dir[MAXBUF];
-    strcpy(dir, "../spcbir.config"); // todo change
+    strcpy(dir, "./spcbir.config"); // todo change
     bool usingDefaultConfigFile = true;
     SP_CONFIG_MSG msg;
     SPPoint **arrOfAllPoints = NULL;
@@ -76,7 +76,14 @@ int main(int argc, char **argv) {
     }
 
     for (int i = 0; i < config->spNumOfImages; i++) {
-        spPointMatrix[i] = imageProc.getImageFeatures(config->spImagesDirectory, i, &pointsExtractInPic[i]);
+    	char path[1024];
+
+    	spConfigGetImagePath(path,config,i);
+    	if (path == NULL) {
+    		//path
+    		return -1;
+    	}
+        spPointMatrix[i] = imageProc.getImageFeatures(path, i, &pointsExtractInPic[i]);
         if (spPointMatrix[i] == NULL) {
             //todo free all
             return -1;
@@ -102,6 +109,7 @@ int main(int argc, char **argv) {
                 //todo OMG free all...
                 return -1;
             }
+            int check  = spPointGetDimension(arrOfAllPoints[pointIndex]);
             pointIndex++;
             spPointDestroy(spPointMatrix[i][j]);
         }
@@ -124,13 +132,28 @@ int main(int argc, char **argv) {
     fgets(query, 1024, stdin);
     removeNewline(query);
 
+    //###################will be deleted#####################
+    query[0] = '\0';
+    strcpy(query,"./images/img0.png");
+    //###################will be deleted#####################
+
     while (strcmp(query, "<>") != 0) {
         int *imgAppearanceCounterArr = (int *) calloc((size_t) config->spNumOfImages, sizeof(int));
         int queryNumOfFeatures;
         int i;
         char str[15];
-        SPPoint **queryFeatures = imageProc.getImageFeatures(query, -1, &queryNumOfFeatures);
+        SPPoint **queryFeatures = imageProc.getImageFeatures(query, 0, &queryNumOfFeatures);
+        if (queryFeatures == NULL) {
+        	//todo shoaa
+        	printf("tofet");
+        	return -1;
+        }
         for (i = 0; i < queryNumOfFeatures; i++) {
+        	if (queryFeatures[i] == NULL) {
+        		//todo fuck
+        		printf("fuck");
+        		return -1;
+        	}
             SPBPQueue *queue = spBPQueueCreate(config->spKNN);
             kNearestNeighbors(kdTree, queue, queryFeatures[i]);
             while (!spBPQueueIsEmpty(queue)) {
