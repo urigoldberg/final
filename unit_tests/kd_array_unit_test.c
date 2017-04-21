@@ -192,25 +192,25 @@ int Split_test(bool toPrint) {
 		return 0;
 }
 
-int main(int argc, char **argv) {
-	printf("test started\n");
-
-	//init
-	if (SPKDArray_Init_Test(false) == succeeded){
-		printf("Init TIL BALISTI\n");
-	}
-	else {
-		printf("Init failed\n");
-	}
-
-	//split
-	if (Split_test(false)==0){
-			printf("Split TIL BALISTI");
-		}
-		else {
-			printf("Split failed");
-		}
-
-	return 0;
-}
+//int main(int argc, char **argv) {
+//	printf("test started\n");
+//
+//	//init
+//	if (SPKDArray_Init_Test(false) == succeeded){
+//		printf("Init TIL BALISTI\n");
+//	}
+//	else {
+//		printf("Init failed\n");
+//	}
+//
+//	//split
+//	if (Split_test(false)==0){
+//			printf("Split TIL BALISTI");
+//		}
+//		else {
+//			printf("Split failed");
+//		}
+//
+//	return 0;
+//}
 

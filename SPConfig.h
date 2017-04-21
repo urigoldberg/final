@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+#include <errno.h>
+#include <limits.h>
 #include <stdlib.h>
 #include "kdTree.h"
 #include "SPLogger.h"
