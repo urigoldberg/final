@@ -248,7 +248,7 @@ SPConfig spConfigCreate(const char *filename, SP_CONFIG_MSG *msg) {
         *msg = SP_CONFIG_INVALID_ARGUMENT;
         return NULL;
     }
-    SPConfig res = (SPConfig) malloc(sizeof(SPConfig));
+    SPConfig res = (SPConfig) malloc(sizeof(*res));
     if (res == NULL) {
         *msg = SP_CONFIG_ALLOC_FAIL;
         return NULL;
@@ -359,7 +359,9 @@ SP_CONFIG_MSG spConfigGetImagePath(char *imagePath, const SPConfig config,
         return SP_CONFIG_INDEX_OUT_OF_RANGE;
     } else {
         char res[MAXBUF];
+        res[0] = '\0';
         char indexString[MAXBUF];
+        indexString[0]='\0';
         strcat(res, config->spImagesDirectory);
         strcat(res, config->spImagesPrefix);
         sprintf(indexString, "%d", index);

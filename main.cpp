@@ -76,7 +76,9 @@ int main(int argc, char **argv) {
     }
 
     for (int i = 0; i < config->spNumOfImages; i++) {
-        spPointMatrix[i] = imageProc.getImageFeatures(config->spImagesDirectory, i, &pointsExtractInPic[i]);
+        char imagePath[1024 + 1] = { '\0' };
+        spConfigGetImagePath(imagePath, config, i);
+        spPointMatrix[i] = imageProc.getImageFeatures(imagePath, i, &pointsExtractInPic[i]);
         if (spPointMatrix[i] == NULL) {
             //todo free all
             return -1;
