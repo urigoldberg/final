@@ -15,11 +15,20 @@ extern "C" {
 #include "SPImageProc.h"
 
 int main(int argc, char **argv) {
-    sp::ImageProc* imageProc = NULL;
+    // Members
+	sp::ImageProc* imageProc = NULL;
 	char dir[MAXBUF];
 	strcpy(dir, "../spcbir.config"); // todo change
 	bool usingDefaultConfigFile = true;
 	SP_CONFIG_MSG msg;
+	SPPoint** arrOfAllPoints = NULL;
+	SPPoint*** spPointMatrix = NULL;
+	int* pointsExtractInPic = NULL;
+	int pointIndex;
+	int howManyPoints;
+	SPKDArray* kdArray;
+	KDTreeNode* kdTree;
+
 	if (argc > 1) {
 		if (argc != 3) {
 				printf("Invalid command line : use -c <config_filename>\n");
@@ -46,19 +55,68 @@ int main(int argc, char **argv) {
     imageProc = new sp::ImageProc(config);
     // todo check if needed to handle error
 
+    //
+    howManyPoints = 0;
+    spPointMatrix = (SPPoint***)malloc(sizeof(SPPoint**)*config->spNumOfImages);
+    pointsExtractInPic = (int*)calloc(config->spNumOfImages,sizeof(int));
+    if (spPointMatrix == NULL || pointsExtractInPic == NULL) {
+    	//free all
+    	return -1;
+    }
+
+    for (int i = 0; i < config->spNumOfImages; i++)
+    {
+    	spPointMatrix[i] = getImageFeatures(config->spImagesDirectory,i,&pointsExtractInPic[i]);
+    	if (spPointMatrix[i] == NULL)
+    	{
+    		//free all
+    		return -1;
+    	}
+    	howManyPoints += pointsExtractInPic[i];
+    }
+
+
+    arrOfAllPoints = (SPPoint**)malloc(sizeof(SPPoint*)*howManyPoints);
+    if (arrOfAllPoints == NULL) {
+    	//free all
+    	return -1;
+    }
+
+    pointIndex = 0;
+    //for each row in matrix
+    for (int i = 0; i < config->spNumOfImages; i++) {
+
+    	//copy each point
+    	for (int j = 0; j < pointsExtractInPic[i]; j++) {
+    		arrOfAllPoints[i] = spPointCopy(spPointMatrix[i][j]);
+    		if (arrOfAllPoints[i] == NULL) {
+    			//OMG free all...
+    			return -1;
+    		}
+    		spPointDestroy(spPointMatrix[i][j]);
+    	}
+
+    	free(spPointMatrix[i]);
+    }
+
+    free (spPointMatrix);
+
+    kdArray = Init(arrOfAllPoints, howManyPoints);
+
+    if (kdArray == NULL) {
+    		DestroySppointArray(pointsArr,5);
+    		return 1;
+    	}
+    //which one? incremental? random? max? pass the correct one
+    kdTree = InitKdTreeFromKdArray(kdArray, INCREMENTAL, 1);
+
+    //query, search , finish project
 
 
 
 
-	if(spConfigIsExtractionMode(config, &msg)) {
 
 
-	} else {
-		// not in extraction mode
-		if (msg == SP_CONFIG_INVALID_ARGUMENT) {
-			// show error
-			return -1;
-		}
 
-	}
+
 }
