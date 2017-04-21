@@ -1,10 +1,3 @@
-/*
- * main.cpp
- *
- *  Created on: Mar 17, 2017
- *      Author: urigo
- */
-
 #include <cstdlib>
 
 //include c library
@@ -22,7 +15,7 @@ extern "C" {
 #include "SPImageProc.h"
 
 int main(int argc, char **argv) {
-
+    sp::ImageProc* imageProc = NULL;
 	char dir[MAXBUF];
 	strcpy(dir, "../spcbir.config"); // todo change
 	bool usingDefaultConfigFile = true;
@@ -50,15 +43,21 @@ int main(int argc, char **argv) {
 	}
 
 	// config successfull
+    imageProc = new sp::ImageProc(config);
+    // todo check if needed to handle error
+
+
+
+
 
 	if(spConfigIsExtractionMode(config, &msg)) {
-		// in extraction mode
+
 
 	} else {
 		// not in extraction mode
 		if (msg == SP_CONFIG_INVALID_ARGUMENT) {
 			// show error
-			return 1;
+			return -1;
 		}
 
 	}
