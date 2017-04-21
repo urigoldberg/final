@@ -51,6 +51,10 @@ int SortByPointsIndex(const void* a,const void* b);
 
 void DestroyKdTree (KDTreeNode* tree);
 
+void kNearestNeighbors(KDTreeNode *curr, SPBPQueue *bpq, SPPoint *point);
+
+KDTreeNode *InitKdTreeFromKdArray(SPKDArray *kdArray, spKDTreeSplitMethod SpCriteria, int forINCREMENTAL);
+
 #endif /* KDTREE_H_ */
 
 
