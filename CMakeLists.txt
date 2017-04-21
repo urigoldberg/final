@@ -1,8 +1,12 @@
 cmake_minimum_required(VERSION 3.7)
 project(final_copy_2)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+find_package( OpenCV REQUIRED )
+
 set(CMAKE_CXX_STANDARD 11)
-find_package( OpenCV REQUIRED xfeatures2d features2d highgui imgcodecs imgproc core)
+#find_package( OpenCV REQUIRED xfeatures2d features2d highgui imgcodecs imgproc core)
 
 set(SOURCE_FILES
         unit_tests/kd_array_unit_test.c
@@ -29,3 +33,4 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(unit_tests)
 
 add_executable(final_copy_2 ${SOURCE_FILES})
+target_link_libraries( final_copy_2 ${OpenCV_LIBS} )
