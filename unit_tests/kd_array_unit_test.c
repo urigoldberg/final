@@ -184,9 +184,11 @@ int Split_test(bool toPrint) {
 			printf("ok ok ok\n");
 		}
 
+
+		DestroyKDArray(firstKDDrray, firstKDDrray->dim);
 		DestroyKDArray(right, right->dim);
 		DestroyKDArray(left, left->dim);
-		DestroyKDArray(firstKDDrray, firstKDDrray->dim);
+
 		return 0;
 }
 
@@ -211,3 +213,4 @@ int main(int argc, char **argv) {
 
 	return 0;
 }
+
