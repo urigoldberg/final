@@ -56,13 +56,17 @@ void DestroyKDArray (SPKDArray* arr,int numOfPoints) {
 		return;
 	}
 
+	if (arr->pointsArr[0] == NULL) {
+		free(arr->pointsArr);
+		free(arr);
+		return;
+	}
 	dim = spPointGetDimension(arr->pointsArr[0]);
 	DestroySppointArray(arr->pointsArr, numOfPoints);
-	free(arr->pointsArr);
 
 	if (arr->sortedMatrix != NULL) {
 		for (int i = 0; i < dim; i++) {
-			free(&arr->sortedMatrix[i]); //TODO check this kind of free. regular dosent work
+			free(arr->sortedMatrix[i]); //TODO check this kind of free. regular dosent work
 		}
 
 		free(arr->sortedMatrix);
@@ -179,7 +183,7 @@ SPKDArray* Init(SPPoint** arr, int size) {
 
 	for (int i = 0; i < pointDim; i++) {
 
-		res->sortedMatrix[i] = (int*) calloc(pointDim,sizeof(int));
+		res->sortedMatrix[i] = (int*) calloc(size,sizeof(int));
 		if (res->sortedMatrix[i] == NULL) {
 			DestroyKDArray(res, size);
 			free(tempRow);
@@ -198,11 +202,11 @@ SPKDArray* Init(SPPoint** arr, int size) {
 		for (int k = 0; k < size; k++) {
 			res->sortedMatrix[i][k] = tempRow[k].indexOfOrig;
 		}
+
 	}
 
 	//free resources
 	free(tempRow);
-
 	return res;
 }
 
@@ -283,7 +287,7 @@ int Split(SPKDArray* kdArr, SPKDArray ** left, SPKDArray ** right, int coor) {
 
 	//create pointArr of right side + fill map with left element
 	for (int i = 0; i < rightSize; i++) {
-		int index = ((kdArr->sortedMatrix[coor][leftSize - 1 + i]));
+		int index = ((kdArr->sortedMatrix[coor][leftSize + i]));
 		(*right)->pointsArr[i] = spPointCopy(kdArr->pointsArr[index]);
 
 		map[index] = -1*(i+1);
@@ -353,11 +357,7 @@ int Split(SPKDArray* kdArr, SPKDArray ** left, SPKDArray ** right, int coor) {
 			}
 		}
 	}
-	for(int i=0;i<pointDim;i++){
-		printf("%d\n",map[i]);
-		//printf(map[i]);
-		printf("\n");
-	}
+
 	free(map);
 	return 0;
 }
@@ -377,11 +377,19 @@ KDTreeNode* InitKdTreeNode(int Dim,int Val, KDTreeNode *Left,KDTreeNode *Right,S
 		return NULL;
 	}
 
-	res->Data = spPointCopy(Data);
-
-	if (res->Data == NULL) {
-		free(res);
+	if (Data == NULL) {
+		res->Data = NULL;
 	}
+
+	else
+	{
+		res->Data = spPointCopy(Data);
+
+		if (res->Data == NULL) {
+			free(res);
+		}
+	}
+
 
 	res->Dim = Dim;
 	res->Left = Left;
