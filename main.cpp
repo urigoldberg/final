@@ -1,4 +1,7 @@
 #include <cstdlib>
+#include <ctype.h>
+#include <conio.h>
+#include "main_aux.cpp"
 
 //include c library
 extern "C" {
@@ -24,11 +27,11 @@ int cmpfunc(const void *a, const void *b) {
 }
 
 int main(int argc, char **argv) {
-    // Members
-//    sp::ImageProc *imageProc = NULL;
+
+	// variables
     char query[1024];
     char dir[MAXBUF];
-    strcpy(dir, "./spcbir.config"); // todo change
+    strcpy(dir, "./spcbir.config");
     bool usingDefaultConfigFile = true;
     SP_CONFIG_MSG msg;
     SPPoint **arrOfAllPoints = NULL;
@@ -39,6 +42,7 @@ int main(int argc, char **argv) {
     SPKDArray *kdArray;
     KDTreeNode *kdTree;
 
+    // Check Args
     if (argc > 1) {
         if (argc != 3) {
             printf("Invalid command line : use -c <config_filename>\n");
@@ -47,26 +51,28 @@ int main(int argc, char **argv) {
             strcpy(dir, argv[2]);
             usingDefaultConfigFile = false;
             if (strcmp(argv[1], "-c") != 0) {
+            	// todo change <config_filename> to something else?
                 printf("Invalid command line : use -c <config_filename>\n");
                 return -1;
             }
         }
     }
 
+
+    // Create Config & image proc
     SPConfig config = spConfigCreate(dir, &msg);
     if (!config) {
         if (msg == SP_CONFIG_CANNOT_OPEN_FILE) {
-            printf("The configuration file %s couldn't be open\n", usingDefaultConfigFile ? "spcbir.config" : dir);
+            printf(CANNTOPENCONFIG, usingDefaultConfigFile ? "spcbir.config" : dir);
         }
         return -1;
     }
-
-    // config successfull
     sp::ImageProc imageProc(config);
-//    imageProc = new sp::ImageProc(config);
+
     // todo check if needed to handle error
 
-    //
+
+    // Allocate points matrix for points will be extracted from images
     howManyPoints = 0;
     spPointMatrix = (SPPoint ***) malloc(sizeof(SPPoint **) * config->spNumOfImages);
     pointsExtractInPic = (int *) malloc(config->spNumOfImages * sizeof(int));
@@ -75,6 +81,7 @@ int main(int argc, char **argv) {
         return -1;
     }
 
+    // Extract points
     for (int i = 0; i < config->spNumOfImages; i++) {
     	char path[1024];
 
@@ -92,6 +99,7 @@ int main(int argc, char **argv) {
     }
 
 
+    // Put all points in one array for KDtree
     arrOfAllPoints = (SPPoint **) malloc(sizeof(SPPoint *) * howManyPoints);
     if (arrOfAllPoints == NULL) {
         //free all
@@ -116,28 +124,33 @@ int main(int argc, char **argv) {
 
         free(spPointMatrix[i]);
     }
-
     free(spPointMatrix);
 
+    // Create KDArray + KDTree
     kdArray = Init(arrOfAllPoints, howManyPoints);
-
     if (kdArray == NULL) {
         // todo destroy all
         return -1;
     }
-    //which one? incremental? random? max? pass the correct one
     kdTree = InitKdTreeFromKdArray(kdArray, config->spKDTreeSplitMethod, 0);
+    if (kdTree == NULL) {
+		// todo destroy all
+		return -1;
+	}
 
-    printf("Please enter an image path");
+    // Ask for query
+    printf(EnterQuery);
     fgets(query, 1024, stdin);
     removeNewline(query);
 
     //###################will be deleted#####################
     query[0] = '\0';
-    strcpy(query,"./images/img0.png");
+    strcpy(query,"./images/img7.png");
     //###################will be deleted#####################
 
-    while (strcmp(query, "<>") != 0) {
+    // Execute query
+    while (strcmp(query, EXITSIGN) != 0) {
+
         int *imgAppearanceCounterArr = (int *) calloc((size_t) config->spNumOfImages, sizeof(int));
         int queryNumOfFeatures;
         int i;
@@ -148,24 +161,37 @@ int main(int argc, char **argv) {
         	printf("tofet");
         	return -1;
         }
+
+        // Count similar pictures
         for (i = 0; i < queryNumOfFeatures; i++) {
+
         	if (queryFeatures[i] == NULL) {
         		//todo fuck
-        		printf("fuck");
         		return -1;
         	}
-            SPBPQueue *queue = spBPQueueCreate(config->spKNN);
-            kNearestNeighbors(kdTree, queue, queryFeatures[i]);
-            while (!spBPQueueIsEmpty(queue)) {
-                BPQueueElement element;
-                spBPQueuePeek(queue, &element);
-                spBPQueueDequeue(queue);
-                imgAppearanceCounterArr[element.index]++;
-            }
-        }
 
-        qsort(imgAppearanceCounterArr, (size_t) config->spNumOfImages, sizeof(int), cmpfunc);
+		SPBPQueue *queue = spBPQueueCreate(config->spKNN);
+		kNearestNeighbors(kdTree, queue, queryFeatures[i]);
+		while (!spBPQueueIsEmpty(queue)) {
+			BPQueueElement element;
+			spBPQueuePeek(queue, &element);
+			spBPQueueDequeue(queue);
+			imgAppearanceCounterArr[element.index]++;
+		}
+		spBPQueueDestroy(queue);
+	}
+
+        DestroySppointArray(queryFeatures, queryNumOfFeatures);
+
+        // Find and print spNumOfSimilarImages
         for (i = 0; i < config->spNumOfSimilarImages; i++) {
+
+        	if (i == 0 && !config->spMinimalGUI)
+        	{
+        		printf(BESTCANDID,query);
+        	}
+
+        	// Find closest image
             int maxIndex = -1;
             int maxValue = -1;
             for (int j = 0; j < config->spNumOfImages; j++) {
@@ -177,18 +203,36 @@ int main(int argc, char **argv) {
             if (maxIndex > -1) {
                 imgAppearanceCounterArr[maxIndex] = -1;
             }
-            char *path = strcat(config->spImagesDirectory, config->spImagesPrefix);
-            sprintf(str, "%d", maxIndex);
-            path = strcat(path, str);
-            path = strcat(path, config->spImagesSuffix);
-            imageProc.showImage(path);
+
+            // Create path of closest image
+            char path[1024];
+            spConfigGetImagePath(path,config,maxIndex);
+
+            // Show results (non) minimal gui
+            if (config->spMinimalGUI)
+            {
+            	imageProc.showImage(path);
+            	getch(); //wait for user
+            }
+
+            else
+            {
+            	printf("%s\n",path);
+            }
+
         }
-        printf("Please enter an image path");
+        printf(EnterQuery);
         fgets(query, 1024, stdin);
         removeNewline(query);
+
+        //###################will be deleted#####################
+        query[0] = '\0';
+        strcpy(query,EXITSIGN);
+        //###################will be deleted#####################
     }
 //todo free tibet
-    printf("Exiting...");
+    printf(EXIT);
     return 0;
 
 }
+
