@@ -19,7 +19,7 @@ typedef struct SPKDArray {
 } SPKDArray;
 
 
- typedef struct KDTreeNode{
+typedef struct KDTreeNode{
 	int Dim;
 	int Val;
 	struct KDTreeNode *Left;
@@ -54,6 +54,9 @@ void DestroyKdTree (KDTreeNode* tree);
 void kNearestNeighbors(KDTreeNode *curr, SPBPQueue *bpq, SPPoint *point);
 
 KDTreeNode *InitKdTreeFromKdArray(SPKDArray *kdArray, spKDTreeSplitMethod SpCriteria, int forINCREMENTAL);
+
+void DestroyKDArray(SPKDArray *arr, int numOfPoints);
+void DestroySppointArray(SPPoint **pointArr, int howmanypoints);
 
 #endif /* KDTREE_H_ */
 

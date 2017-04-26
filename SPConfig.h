@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include "kdTree.h"
 #include "SPLogger.h"
+#include "main_aux.h"
 
 /**
  * A data-structure which is used for configuring the system.
@@ -36,7 +37,7 @@ typedef enum sp_config_msg_t {
 	INCREMENTAL,
 } SP_KD_TREE_SPLIT_METHOD;*/
 
-//typedef struct sp_config_t* SPConfig;
+typedef struct sp_config_t* SPConfig;
 
 typedef struct sp_config_t {
 	char spImagesDirectory[MAXBUF];
@@ -177,7 +178,7 @@ int spConfigGetPCADim(const SPConfig config, SP_CONFIG_MSG* msg);
  * - SP_CONFIG_SUCCESS - in case of success
  */
 SP_CONFIG_MSG spConfigGetImagePath(char* imagePath, const SPConfig config,
-		int index);
+								   int index);
 
 /**
  * The function stores in pcaPath the full path of the pca file.

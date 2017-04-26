@@ -108,7 +108,7 @@ void sp::ImageProc::preprocess(const SPConfig config) {
 		pca = PCA(features, Mat(), CV_PCA_DATA_AS_ROW, pcaDim);
 		if (spConfigGetPCAPath(pcaPath, config) != SP_CONFIG_SUCCESS) {
 			spLoggerPrintError(PCA_FILE_NOT_RESOLVED, __FILE__, __func__,
-			__LINE__);
+							   __LINE__);
 			throw Exception();
 		}
 		FileStorage fs(pcaPath, FileStorage::WRITE);
@@ -164,7 +164,7 @@ sp::ImageProc::ImageProc(const SPConfig config) {
 }
 
 SPPoint** sp::ImageProc::getImageFeatures(const char* imagePath, int index,
-		int* numOfFeats) {
+										  int* numOfFeats) {
 	vector<KeyPoint> keypoints;
 	Mat descriptor, img, points;
 	double* pcaSift = NULL;
@@ -211,7 +211,7 @@ void sp::ImageProc::showImage(const char* imgPath) {
 		Mat img = imread(imgPath, cv::IMREAD_COLOR);
 		if (img.empty()) {
 			spLoggerPrintWarning(IMAGE_NOT_EXIST_MSG, __FILE__, __func__,
-			__LINE__);
+								 __LINE__);
 			return;
 		}
 		imshow(windowName, img);
@@ -219,7 +219,7 @@ void sp::ImageProc::showImage(const char* imgPath) {
 		destroyAllWindows();
 	} else {
 		spLoggerPrintWarning(MINIMAL_GUI_NOT_SET_WARNING, __FILE__, __func__,
-		__LINE__);
+							 __LINE__);
 	}
 
 }
