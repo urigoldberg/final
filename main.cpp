@@ -292,8 +292,8 @@ int main(int argc, char **argv) {
         removeNewline(query);
 
         //###################will be deleted#####################
-        query[0] = '\0';
-        strcpy(query,EXITSIGN);
+//        query[0] = '\0';
+//        strcpy(query,EXITSIGN);
         //###################will be deleted#####################
     }
 
