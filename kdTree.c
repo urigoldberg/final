@@ -1,6 +1,5 @@
 #include "kdTree.h"
 #include "SPPoint.h"
-#include "AllocateManager.h"
 #include <time.h>
 
 #define POINTSNUMBER 3
@@ -12,17 +11,6 @@
  *             *
  ***************
  */
-
-void DestroyManager(AllocateManager *manager) {
-    free(manager->voidArray);
-    free(manager->founcArray);
-    manager->arraySize = 0;
-    manager->isInit = 0;
-    free(manager);
-
-    //gives opportunity to free a manager more than once
-    manager = NULL;
-}
 
 void DestroyKdTreeNode(KDTreeNode *treeNode) {
     if (treeNode == NULL)
@@ -36,10 +24,12 @@ void DestroyKdTreeNode(KDTreeNode *treeNode) {
 void DestroyKdTree(KDTreeNode *tree) {
     if (tree->Left != NULL) {
         DestroyKdTree(tree->Left);
+        tree->Left = NULL;
     }
 
     if (tree->Right != NULL) {
         DestroyKdTree(tree->Right);
+        tree->Right = NULL;
     }
     DestroyKdTreeNode(tree);
 
@@ -462,6 +452,9 @@ KDTreeNode *InitKdTreeFromKdArray(SPKDArray *kdArray, spKDTreeSplitMethod SpCrit
         return NULL;
     }
 
+
+    DestroyKDArray(rightArr, rightArr->dim);
+	DestroyKDArray(leftArr, leftArr->dim);
     return res;
 
 }

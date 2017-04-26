@@ -1,29 +1,36 @@
 #include <cstdlib>
 #include <ctype.h>
-#include <conio.h>
-#include "main_aux.cpp"
+//#include <conio.h>
+#include "main_aux.h"
 
 //include c library
 extern "C" {
 
 //include your own C source files
 #include "SPPoint.h"
+#include "SPBPriorityQueue.h"
 #include "SPLogger.h"
 #include "SPConfig.h"
 #include "kdTree.h"
-#include "AllocateManager.h"
 }
 
 //include C++ source files
 #include "SPImageProc.h"
 
+void DestroyspPointMatrix(SPPoint ***spPointMatrix,int* pointsExtractInPic,int whereTofree) {
+	for (int i = 0; i < whereTofree; i++) {
+		for (int j = 0; j < pointsExtractInPic[i]; j++) {
+			if (spPointMatrix[i][j] != NULL) {
+				spPointDestroy(spPointMatrix[i][j]);
+			}
+		}
+		if (spPointMatrix[i] != NULL) {
+			free(spPointMatrix[i]);
+		}
+	}
 
-void removeNewline(char s1[]) {
-    s1[strlen(s1) - 1] = '\0';
-}
-
-int cmpfunc(const void *a, const void *b) {
-    return (*(int *) a - *(int *) b);
+	free(spPointMatrix);
+	free (pointsExtractInPic);
 }
 
 int main(int argc, char **argv) {
@@ -31,7 +38,7 @@ int main(int argc, char **argv) {
 	// variables
     char query[1024];
     char dir[MAXBUF];
-    strcpy(dir, "./spcbir.config");
+    strcpy(dir, "../spcbir.config");
     bool usingDefaultConfigFile = true;
     SP_CONFIG_MSG msg;
     SPPoint **arrOfAllPoints = NULL;
@@ -41,23 +48,22 @@ int main(int argc, char **argv) {
     int howManyPoints;
     SPKDArray *kdArray;
     KDTreeNode *kdTree;
+    SPBPQueue *queue;
 
     // Check Args
     if (argc > 1) {
         if (argc != 3) {
-            printf("Invalid command line : use -c <config_filename>\n");
+            printf(INVALID_ARGS);
             return -1;
         } else {
             strcpy(dir, argv[2]);
             usingDefaultConfigFile = false;
             if (strcmp(argv[1], "-c") != 0) {
-            	// todo change <config_filename> to something else?
-                printf("Invalid command line : use -c <config_filename>\n");
+                printf(INVALID_ARGS);
                 return -1;
             }
         }
     }
-
 
     // Create Config & image proc
     SPConfig config = spConfigCreate(dir, &msg);
@@ -67,6 +73,15 @@ int main(int argc, char **argv) {
         }
         return -1;
     }
+
+    //logger Init
+    SP_LOGGER_MSG loggerMsg;
+    loggerMsg =  spLoggerCreate(config->spLoggerFilename, (SP_LOGGER_LEVEL) config->spLoggerLevel);\
+    if (loggerMsg != SP_LOGGER_SUCCESS) {
+        spConfigDestroy(config);
+        return -1;
+    }
+
     sp::ImageProc imageProc(config);
 
     // todo check if needed to handle error
@@ -75,9 +90,22 @@ int main(int argc, char **argv) {
     // Allocate points matrix for points will be extracted from images
     howManyPoints = 0;
     spPointMatrix = (SPPoint ***) malloc(sizeof(SPPoint **) * config->spNumOfImages);
+
+    // Allocation problem
+    if (spPointMatrix == NULL) {
+        spLoggerPrintError(ALLOCATION_FAILURE_ERROR,__FILE__, __func__, __LINE__);
+        spLoggerDestroy();
+    	free(config);
+    	return -1;
+    }
+
     pointsExtractInPic = (int *) malloc(config->spNumOfImages * sizeof(int));
-    if (spPointMatrix == NULL || pointsExtractInPic == NULL) {
-        //free all
+    // Allocation problem
+    if (pointsExtractInPic == NULL) {
+        spLoggerPrintError(ALLOCATION_FAILURE_ERROR,__FILE__, __func__, __LINE__);
+    	free(config);
+        spLoggerDestroy();
+    	free(spPointMatrix);
         return -1;
     }
 
@@ -86,13 +114,13 @@ int main(int argc, char **argv) {
     	char path[1024];
 
     	spConfigGetImagePath(path,config,i);
-    	if (path == NULL) {
-    		//path
-    		return -1;
-    	}
+
         spPointMatrix[i] = imageProc.getImageFeatures(path, i, &pointsExtractInPic[i]);
+
+        // Allocation problem
         if (spPointMatrix[i] == NULL) {
-            //todo free all
+            DestroyspPointMatrix(spPointMatrix,pointsExtractInPic,i);
+            free(config);
             return -1;
         }
         howManyPoints += pointsExtractInPic[i];
@@ -100,9 +128,12 @@ int main(int argc, char **argv) {
 
 
     // Put all points in one array for KDtree
-    arrOfAllPoints = (SPPoint **) malloc(sizeof(SPPoint *) * howManyPoints);
+    arrOfAllPoints = (SPPoint **) calloc(howManyPoints,sizeof(SPPoint *));
+
+    // Allocation problem
     if (arrOfAllPoints == NULL) {
-        //free all
+    	DestroyspPointMatrix(spPointMatrix,pointsExtractInPic,config->spNumOfImages);
+		free(config);
         return -1;
     }
 
@@ -113,30 +144,53 @@ int main(int argc, char **argv) {
         //copy each point
         for (int j = 0; j < pointsExtractInPic[i]; j++) {
             arrOfAllPoints[pointIndex] = spPointCopy(spPointMatrix[i][j]);
+
+            // Allocation problem
             if (arrOfAllPoints[pointIndex] == NULL) {
-                //todo OMG free all...
+            	DestroyspPointMatrix(spPointMatrix,pointsExtractInPic,config->spNumOfImages);
+            	DestroySppointArray(arrOfAllPoints, howManyPoints);
+            	free(config);
                 return -1;
             }
-            int check  = spPointGetDimension(arrOfAllPoints[pointIndex]);
+
             pointIndex++;
             spPointDestroy(spPointMatrix[i][j]);
+            spPointMatrix[i][j] = NULL; // in case of memory problem try to free all in DestroyspPointMatrix
         }
-
         free(spPointMatrix[i]);
+        spPointMatrix[i] = NULL; // in case of memory problem try to free all in DestroyspPointMatrix
     }
     free(spPointMatrix);
+    free(pointsExtractInPic);
 
     // Create KDArray + KDTree
     kdArray = Init(arrOfAllPoints, howManyPoints);
     if (kdArray == NULL) {
-        // todo destroy all
+    	DestroySppointArray(arrOfAllPoints, howManyPoints);
+    	free(config);
         return -1;
     }
+
+
+
     kdTree = InitKdTreeFromKdArray(kdArray, config->spKDTreeSplitMethod, 0);
     if (kdTree == NULL) {
-		// todo destroy all
+    	DestroyKDArray(kdArray,howManyPoints);
+    	free(config);
 		return -1;
 	}
+
+    DestroyKDArray(kdArray,howManyPoints);
+
+    // Create SPBPQueue for query
+    queue = spBPQueueCreate(config->spKNN);
+
+    if (queue == NULL) {
+    	DestroyKDArray(kdArray,howManyPoints);
+    	DestroyKdTree(kdTree);
+		free(config);
+    }
+
 
     // Ask for query
     printf(EnterQuery);
@@ -145,20 +199,29 @@ int main(int argc, char **argv) {
 
     //###################will be deleted#####################
     query[0] = '\0';
-    strcpy(query,"./images/img7.png");
+    strcpy(query,"../images/img7.png");
     //###################will be deleted#####################
 
     // Execute query
     while (strcmp(query, EXITSIGN) != 0) {
 
         int *imgAppearanceCounterArr = (int *) calloc((size_t) config->spNumOfImages, sizeof(int));
+
+        if (imgAppearanceCounterArr == NULL) {
+        	DestroyKDArray(kdArray,howManyPoints);
+			DestroyKdTree(kdTree);
+			free(config);
+        }
+
         int queryNumOfFeatures;
         int i;
-        char str[15];
+
         SPPoint **queryFeatures = imageProc.getImageFeatures(query, 0, &queryNumOfFeatures);
         if (queryFeatures == NULL) {
-        	//todo shoaa
-        	printf("tofet");
+        	DestroyKDArray(kdArray,howManyPoints);
+			DestroyKdTree(kdTree);
+			free(imgAppearanceCounterArr);
+			free(config);
         	return -1;
         }
 
@@ -166,11 +229,14 @@ int main(int argc, char **argv) {
         for (i = 0; i < queryNumOfFeatures; i++) {
 
         	if (queryFeatures[i] == NULL) {
-        		//todo fuck
-        		return -1;
+        		DestroyKDArray(kdArray,howManyPoints);
+        		DestroyKdTree(kdTree);
+        		DestroySppointArray(queryFeatures, queryNumOfFeatures);
+				free(imgAppearanceCounterArr);
+				free(config);
+				return -1;
         	}
 
-		SPBPQueue *queue = spBPQueueCreate(config->spKNN);
 		kNearestNeighbors(kdTree, queue, queryFeatures[i]);
 		while (!spBPQueueIsEmpty(queue)) {
 			BPQueueElement element;
@@ -178,10 +244,10 @@ int main(int argc, char **argv) {
 			spBPQueueDequeue(queue);
 			imgAppearanceCounterArr[element.index]++;
 		}
-		spBPQueueDestroy(queue);
 	}
 
         DestroySppointArray(queryFeatures, queryNumOfFeatures);
+        free(imgAppearanceCounterArr);
 
         // Find and print spNumOfSimilarImages
         for (i = 0; i < config->spNumOfSimilarImages; i++) {
@@ -212,7 +278,7 @@ int main(int argc, char **argv) {
             if (config->spMinimalGUI)
             {
             	imageProc.showImage(path);
-            	getch(); //wait for user
+//            	getch(); //wait for user
             }
 
             else
@@ -230,7 +296,11 @@ int main(int argc, char **argv) {
         strcpy(query,EXITSIGN);
         //###################will be deleted#####################
     }
-//todo free tibet
+
+    // Free All
+    spBPQueueDestroy(queue);
+	DestroyKdTree(kdTree);
+	free(config);
     printf(EXIT);
     return 0;
 

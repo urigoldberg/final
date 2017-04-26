@@ -55,6 +55,10 @@ void kNearestNeighbors(KDTreeNode *curr, SPBPQueue *bpq, SPPoint *point);
 
 KDTreeNode *InitKdTreeFromKdArray(SPKDArray *kdArray, spKDTreeSplitMethod SpCriteria, int forINCREMENTAL);
 
+void DestroyKDArray(SPKDArray *arr, int numOfPoints);
+
+void DestroySppointArray(SPPoint **pointArr, int howmanypoints);
+
 #endif /* KDTREE_H_ */
 
 

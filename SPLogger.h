@@ -1,5 +1,7 @@
 #ifndef SPLOGGER_H_
 #define SPLOGGER_H_
+
+
 /**
  * SP Logger summary:
  * SP Logger is defined at compilation time and it must be initialized
@@ -213,5 +215,18 @@ SP_LOGGER_MSG spLoggerPrintDebug(const char* msg, const char* file,
  * SP_LOGGER_SUCCESS			- otherwise
  */
 SP_LOGGER_MSG spLoggerPrintMsg(const char* msg);
+
+
+#define EnterQuery "Please enter an image path:\n"
+#define EXIT "Exiting..."
+#define EXITSIGN "<>"
+#define CANNTOPENCONFIG "The configuration file %s couldn't be open\n"
+#define BESTCANDID "Best candidates for - %s - are:\n"
+#define INVALID_ARGS "Invalid command line : use -c <config_filename>\n"
+#define PARAMETER_NOT_SET_ERROR "Parameter %s is not set\n"
+#define LOGGER_OUT_OF_MEMORY_ERROR "Logger out of memory\n"
+#define LOGGER_CANNOT_OPEN_FILE_ERROR "Logger cannot open file\n"
+#define ALLOCATION_FAILURE_ERROR "Allocation failure\n"
+
 
 #endif
