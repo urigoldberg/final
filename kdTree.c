@@ -1,5 +1,5 @@
 #include "kdTree.h"
-#include "../Downloads/TOFET/SPPoint.h"
+#include "SPPoint.h"
 #include "AllocateManager.h"
 #include <time.h>
 

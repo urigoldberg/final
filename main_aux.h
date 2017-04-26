@@ -2,10 +2,14 @@
 #ifndef MAIN_AUX_H_
 #define MAIN_AUX_H_
 
-extern "C" {
-#include "SPBPriorityQueue.h"
+//extern "C" {
+//#include "SPBPriorityQueue.h"
+//#include "SPPoint.h"
+//}
+
+
 #include "SPPoint.h"
-}
+#include "SPBPriorityQueue.h"
 
 #define EnterQuery "Please enter an image path:\n"
 #define EXIT "Exiting..."

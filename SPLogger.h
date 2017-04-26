@@ -1,5 +1,7 @@
 #ifndef SPLOGGER_H_
 #define SPLOGGER_H_
+
+#include "main_aux.h"
 /**
  * SP Logger summary:
  * SP Logger is defined at compilation time and it must be initialized
@@ -26,21 +28,21 @@
 
 /** A type used to decide the level of the logger**/
 typedef enum sp_logger_level_t {
-	SP_LOGGER_ERROR_LEVEL, //Error level
-	SP_LOGGER_WARNING_ERROR_LEVEL, //Warning level
-	SP_LOGGER_INFO_WARNING_ERROR_LEVEL, //Info level
-	SP_LOGGER_DEBUG_INFO_WARNING_ERROR_LEVEL //Debug level
+    SP_LOGGER_ERROR_LEVEL, //Error level
+    SP_LOGGER_WARNING_ERROR_LEVEL, //Warning level
+    SP_LOGGER_INFO_WARNING_ERROR_LEVEL, //Info level
+    SP_LOGGER_DEBUG_INFO_WARNING_ERROR_LEVEL //Debug level
 } SP_LOGGER_LEVEL;
 
 /** A type used to indicate errors in function calls **/
 typedef enum sp_logger_msg_t {
-	SP_LOGGER_CANNOT_OPEN_FILE,
-	SP_LOGGER_INVAlID_ARGUMENT,
-	SP_LOGGER_OUT_OF_MEMORY,
-	SP_LOGGER_UNDIFINED,
-	SP_LOGGER_DEFINED,
-	SP_LOGGER_WRITE_FAIL,
-	SP_LOGGER_SUCCESS
+    SP_LOGGER_CANNOT_OPEN_FILE,
+    SP_LOGGER_INVAlID_ARGUMENT,
+    SP_LOGGER_OUT_OF_MEMORY,
+    SP_LOGGER_UNDIFINED,
+    SP_LOGGER_DEFINED,
+    SP_LOGGER_WRITE_FAIL,
+    SP_LOGGER_SUCCESS
 } SP_LOGGER_MSG;
 
 /** A type used for defining the logger**/
@@ -105,7 +107,7 @@ void spLoggerDestroy();
  * SP_LOGGER_SUCCESS			- otherwise
  */
 SP_LOGGER_MSG spLoggerPrintError(const char* msg, const char* file,
-		const char* function, const int line);
+                                 const char* function, const int line);
 
 /**
  * 	Prints warning message. The warning message format is given below:
@@ -142,7 +144,7 @@ SP_LOGGER_MSG spLoggerPrintError(const char* msg, const char* file,
  * SP_LOGGER_SUCCESS			- otherwise
  */
 SP_LOGGER_MSG spLoggerPrintWarning(const char* msg, const char* file,
-		const char* function, const int line);
+                                   const char* function, const int line);
 /**
  * 	Prints Info message. The info message format is given below:
  * 	---INFO---
@@ -199,7 +201,7 @@ SP_LOGGER_MSG spLoggerPrintInfo(const char* msg);
  * SP_LOGGER_SUCCESS			- otherwise
  */
 SP_LOGGER_MSG spLoggerPrintDebug(const char* msg, const char* file,
-		const char* function, const int line);
+                                 const char* function, const int line);
 
 /**
  * The given message is printed. A new line is printed at the end of msg
