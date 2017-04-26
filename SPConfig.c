@@ -40,7 +40,7 @@ void printDefaultValueError(int line, const char *file, SP_CONFIG_MSG msg) {
     } else if (msg == SP_CONFIG_MISSING_NUM_IMAGES) {
         paramName = "spNumOfImages";
     }
-    sprintf(formattedString, "Parameter %s is not set", paramName);
+    sprintf(formattedString, PARAMETER_NOT_SET_ERROR, paramName);
     printError(line, file, formattedString);
 }
 
@@ -287,6 +287,7 @@ SPConfig spConfigCreate(const char *filename, SP_CONFIG_MSG *msg) {
             return NULL;
         }
     }
+
     tmpMsg = getNotInitParam(res);
     if (tmpMsg == SP_CONFIG_SUCCESS) {
         *msg = SP_CONFIG_SUCCESS;
@@ -361,7 +362,7 @@ SP_CONFIG_MSG spConfigGetImagePath(char *imagePath, const SPConfig config,
         char res[MAXBUF];
         res[0] = '\0';
         char indexString[MAXBUF];
-        indexString[0]='\0';
+        indexString[0] = '\0';
         strcat(res, config->spImagesDirectory);
         strcat(res, config->spImagesPrefix);
         sprintf(indexString, "%d", index);

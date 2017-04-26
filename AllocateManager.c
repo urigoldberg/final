@@ -8,7 +8,7 @@
 
 #include "AllocateManager.h"
 
-
+/*
 void* MyMalloc (size_t size, AllocateManager* manager, void (*comp)(void*)) {
 
 	void* resultptr = malloc(size);
@@ -73,16 +73,7 @@ int AddParamWithoutAllocation (void *elem, void (*comp)(void*), AllocateManager*
  * destroiers
  */
 
-void DestroyAll (AllocateManager * manager) {
 
-	//destroy each value that has been saved in the manager
-	for (int i = 0; i < manager->numOfElements; i++)
-		((void (*)(void*))manager->founcArray[i])(manager->voidArray[i]);
-
-	//destroy manager itself
-	DestroyManager(manager);
-
-}
 
 void DestroySPPoint (void * point) {
 	spPointDestroy((SPPoint*)point);
