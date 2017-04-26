@@ -1,6 +1,5 @@
 #include "kdTree.h"
 #include "SPPoint.h"
-#include "AllocateManager.h"
 #include <time.h>
 
 #define POINTSNUMBER 3

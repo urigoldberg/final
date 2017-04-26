@@ -17,7 +17,7 @@ int parseIntFromString(char *str, int *ptr) {
 }
 
 void printError(int line, const char *file, char *msg) {
-    printf("File: %d\nLine: %s\nMessage: %s\n", line, file, msg);
+    printf("File: %s\nLine: %d\nMessage: %s\n", file, line, msg);
 }
 
 void printInvalidLineError(int line, const char *file) {

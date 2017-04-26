@@ -2,14 +2,8 @@
 #ifndef MAIN_AUX_H_
 #define MAIN_AUX_H_
 
-//extern "C" {
-//#include "SPBPriorityQueue.h"
-//#include "SPPoint.h"
-//}
 
 
-#include "SPPoint.h"
-#include "SPBPriorityQueue.h"
 
 #define EnterQuery "Please enter an image path:\n"
 #define EXIT "Exiting..."
@@ -29,7 +23,5 @@ void removeNewline(char s1[]);
 int cmpfunc(const void *a, const void *b);
 
 void freeAll();
-
-void DestroyspPointMatrix(SPPoint ***spPointMatrix,int* pointsExtractInPic,int whereTofree);
 
 #endif /* MAIN_AUX_H_ */
