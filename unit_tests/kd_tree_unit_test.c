@@ -68,8 +68,6 @@ Errors SPKDTree_Test(bool init) {
 	else {
 		//create tree incremental
 		KDTreeNode* treeINCR = InitKdTreeFromKdArray(firstKDDrray, INCREMENTAL, 1, 2);
-
-
 		SPBPQueue *bqp = spBPQueueCreate(3);
 		kNearestNeighbors(treeINCR, bqp, pointsArr[3]);
 		BPQueueElement element;
@@ -100,7 +98,6 @@ Errors SPKDTree_Test(bool init) {
 
 
 
-	DestroySppointArray(pointsArr,5);
 	DestroyKDArray(firstKDDrray, 5);
 
 	if (!good) return logicproblem;
@@ -108,20 +105,21 @@ Errors SPKDTree_Test(bool init) {
 }
 
 
-
-int main(int argc, char **argv) {
-	printf("test started\n");
-
-	//init
-	if (SPKDTree_Test(true) == succeeded){
-		printf("Init TIL BALISTI\n");
-	}
-
-	//search
-	if (SPKDTree_Test(false) == succeeded){
-		printf("Search TIL BALISTI\n");
-	}
-
-
-	return 0;
+static bool initTest() {
+    ASSERT_TRUE(SPKDTree_Test(true) == succeeded);
+    return true;
 }
+
+static bool searchTest() {
+    ASSERT_TRUE(SPKDTree_Test(false) == succeeded);
+    return true;
+}
+
+
+//
+//int main(int argc, char **argv) {
+//
+//    RUN_TEST(initTest);
+//    RUN_TEST(searchTest);
+//	return 0;
+//}

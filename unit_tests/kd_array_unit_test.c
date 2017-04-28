@@ -180,8 +180,9 @@ int Split_test(bool toPrint) {
 		SPKDArray* left = NULL;
 		SPKDArray* right = NULL;
 
-		if (Split(firstKDDrray, &left, &right, 0)==0){
-			printf("ok ok ok\n");
+		if (Split(firstKDDrray, &left, &right, 0)!=0){
+			DestroyKDArray(firstKDDrray, firstKDDrray->dim);
+			return  -1;
 		}
 
 
@@ -192,25 +193,19 @@ int Split_test(bool toPrint) {
 		return 0;
 }
 
+static bool initTest() {
+	ASSERT_TRUE(SPKDArray_Init_Test(false) == succeeded);
+	return true;
+}
+
+static bool splitTest() {
+	ASSERT_TRUE(Split_test(false)==0);
+	return true;
+}
+
 //int main(int argc, char **argv) {
-//	printf("test started\n");
-//
-//	//init
-//	if (SPKDArray_Init_Test(false) == succeeded){
-//		printf("Init TIL BALISTI\n");
-//	}
-//	else {
-//		printf("Init failed\n");
-//	}
-//
-//	//split
-//	if (Split_test(false)==0){
-//			printf("Split TIL BALISTI");
-//		}
-//		else {
-//			printf("Split failed");
-//		}
-//
+//	RUN_TEST(initTest);
+//	RUN_TEST(splitTest);
 //	return 0;
 //}
-
+//
