@@ -53,7 +53,7 @@ void DestroyKdTree (KDTreeNode* tree);
 
 void kNearestNeighbors(KDTreeNode *curr, SPBPQueue *bpq, SPPoint *point);
 
-KDTreeNode *InitKdTreeFromKdArray(SPKDArray *kdArray, spKDTreeSplitMethod SpCriteria, int forINCREMENTAL);
+KDTreeNode *InitKdTreeFromKdArray(SPKDArray *kdArray, spKDTreeSplitMethod SpCriteria, int forINCREMENTAL, int PcadDimension);
 
 void DestroyKDArray(SPKDArray *arr, int numOfPoints);
 

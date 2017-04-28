@@ -173,7 +173,7 @@ int main(int argc, char **argv) {
 
 
 
-    kdTree = InitKdTreeFromKdArray(kdArray, config->kdTreeSplitMethod, 0);
+    kdTree = InitKdTreeFromKdArray(kdArray, config->kdTreeSplitMethod, 0, config->spPCADimension);
     if (kdTree == NULL) {
     	DestroyKDArray(kdArray,howManyPoints);
     	free(config);
