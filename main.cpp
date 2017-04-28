@@ -210,10 +210,8 @@ int main(int argc, char **argv) {
 
         int queryNumOfFeatures;
         int i;
-
         SPPoint **queryFeatures = imageProc.getImageFeatures(query, 0, &queryNumOfFeatures);
         if (queryFeatures == NULL) {
-        	DestroyKDArray(kdArray,howManyPoints);
 			DestroyKdTree(kdTree);
 			free(imgAppearanceCounterArr);
 			free(config);
