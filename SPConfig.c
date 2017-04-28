@@ -171,7 +171,7 @@ SP_CONFIG_MSG handleLine(SPConfig config, char *line, int lineIndex,
     char value[MAXBUF];
     char *tmpWord;
     int wordCounter;
-    if (line[0] == '#') {
+    if (line[0] == '#' || line[0] == '\n') {
         return SP_CONFIG_SUCCESS;
     }
     tmpWord = strtok(line, "#");
