@@ -173,7 +173,7 @@ int main(int argc, char **argv) {
 
 
 
-    kdTree = InitKdTreeFromKdArray(kdArray, config->spKDTreeSplitMethod, 0);
+    kdTree = InitKdTreeFromKdArray(kdArray, config->kdTreeSplitMethod, 0);
     if (kdTree == NULL) {
     	DestroyKDArray(kdArray,howManyPoints);
     	free(config);
@@ -196,11 +196,6 @@ int main(int argc, char **argv) {
     printf(EnterQuery);
     fgets(query, 1024, stdin);
     removeNewline(query);
-
-    //###################will be deleted#####################
-    query[0] = '\0';
-    strcpy(query,"../images/img7.png");
-    //###################will be deleted#####################
 
     // Execute query
     while (strcmp(query, EXITSIGN) != 0) {
@@ -291,10 +286,6 @@ int main(int argc, char **argv) {
         fgets(query, 1024, stdin);
         removeNewline(query);
 
-        //###################will be deleted#####################
-//        query[0] = '\0';
-//        strcpy(query,EXITSIGN);
-        //###################will be deleted#####################
     }
 
     // Free All

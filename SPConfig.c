@@ -123,15 +123,15 @@ SP_CONFIG_MSG insertToConfig(char key[MAXBUF], char value[MAXBUF],
     }
     if (strcmp(key, "spKDTreeSplitMethod") == 0) {
         if (strcmp(value, "RANDOM") == 0) {
-            configObj->spKDTreeSplitMethod = RANDOM;
+            configObj->kdTreeSplitMethod = RANDOM;
             return SP_CONFIG_SUCCESS;
         }
         if (strcmp(value, "MAX_SPREAD") == 0) {
-            configObj->spKDTreeSplitMethod = MAX_SPREAD;
+            configObj->kdTreeSplitMethod = MAX_SPREAD;
             return SP_CONFIG_SUCCESS;
         }
         if (strcmp(value, "INCREMENTAL") == 0) {
-            configObj->spKDTreeSplitMethod = INCREMENTAL;
+            configObj->kdTreeSplitMethod = INCREMENTAL;
             return SP_CONFIG_SUCCESS;
         } else {
             printConstraintError(lineIndex, filename);
@@ -264,7 +264,7 @@ SPConfig spConfigCreate(const char *filename, SP_CONFIG_MSG *msg) {
     res->spMinimalGUI = false;
     res->spNumOfSimilarImages = 1;
     res->spKNN = 1;
-    res->spKDTreeSplitMethod = MAX_SPREAD;
+    res->kdTreeSplitMethod = MAX_SPREAD;
     res->spLoggerLevel = 3;
     res->spImagesDirectory[0] = 0;
     res->spImagesPrefix[0] = 0;
