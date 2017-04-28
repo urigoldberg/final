@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "unit_test_util.h" //SUPPORTING MACROS ASSERT_TRUE/ASSERT_FALSE etc..
-#include "../KdTree.h"
+#include "../kdTree.h"
 #include "../SPPoint.h"
 #include <time.h>
 #include <stdlib.h>
@@ -14,32 +14,26 @@
 typedef enum Errors {memleak, logicproblem,succeeded } Errors;
 
 
-Errors SPKDTree_Init_Test() {
+Errors SPKDTree_Test(bool init) {
+
+	bool good = true;
 
 	//create kdarray for kdtree
-	SPPoint** pointsArr = malloc(sizeof(SPPoint*)*5);
+	SPPoint* pointsArr[5] = {NULL,NULL,NULL,NULL,NULL};
 
-	double* data0 = malloc(sizeof(double)*2);
-	data0[0] = 1.0; data0[1] = 2.0;
+	double data0[] = {1.0,2.0};
 	pointsArr[0] = spPointCreate(data0, 2, 0);
 
-	double* data1 = malloc(sizeof(double)*2);
-	data1[0] = 123.0; data1[1] = 70.0;
-
+	double data1[] = {123.0,70.0};
 	pointsArr[1] = spPointCreate(data1, 2, 1);
 
-	double* data2 = malloc(sizeof(double)*2);
-	data2[0] = 2.0; data2[1] = 7.0;
+	double data2[] = {2.0,7.0};
 	pointsArr[2] = spPointCreate(data2, 2, 2);
 
-	double* data3 = malloc(sizeof(double)*2);
-	data3[0] = 9.0; data3[1] = 11.0;
-
+	double data3[] = {9.0,11.0};
 	pointsArr[3] = spPointCreate(data3, 2, 3);
 
-	double* data4 = malloc(sizeof(double)*2);
-	data4[0] = 3.0; data4[1] = 4.0;
-
+	double data4[] = {3.0,4.0};
 	pointsArr[4] = spPointCreate(data4, 2, 4);
 
 	//Asserts
@@ -50,30 +44,84 @@ Errors SPKDTree_Init_Test() {
 		}
 	}
 
-	SPKDArray* firstKDDrray = Init(pointsArr, 5);
+	SPKDArray* firstKDDrray = Init( pointsArr, 5);
+
 
 	if (firstKDDrray == NULL) {
 		DestroySppointArray(pointsArr,5);
 		return 1;
 	}
 
-	//create tree
-	KDTreeNode* tree = InitKdTreeFromKdArray(firstKDDrray, INCREMENTAL, 1);
+	if (init)
+	{
+		//create tree incremental
+		KDTreeNode* treeINCR = InitKdTreeFromKdArray(firstKDDrray, INCREMENTAL, 1, 2);
+		DestroyKdTree(treeINCR);
 
-	DestroySppointArray(firstKDDrray,5);
-	DestroyKdTree(tree);
+		KDTreeNode* treeRAND = InitKdTreeFromKdArray(firstKDDrray, RANDOM, 1, 2);
+		DestroyKdTree(treeRAND);
+
+		KDTreeNode* treeMAX = InitKdTreeFromKdArray(firstKDDrray,MAX_SPREAD , 1, 2);
+		DestroyKdTree(treeMAX);
+	}
+
+	else {
+		//create tree incremental
+		KDTreeNode* treeINCR = InitKdTreeFromKdArray(firstKDDrray, INCREMENTAL, 1, 2);
+
+
+		SPBPQueue *bqp = spBPQueueCreate(3);
+		kNearestNeighbors(treeINCR, bqp, pointsArr[3]);
+		BPQueueElement element;
+
+		short i = 0;
+		while (!spBPQueueIsEmpty(bqp)) {
+			spBPQueuePeek(bqp, &element);
+			spBPQueueDequeue(bqp);
+			if (i == 0) {
+				good = (element.index == 3);
+				if (!good) break;
+			}
+			else if (i == 1) {
+				good = (element.index == 2);
+				if (!good) break;
+			}
+			else {
+				good = (element.index == 4);
+				if (!good) break;
+			}
+			i++;
+		}
+
+
+		DestroyKdTree(treeINCR);
+		spBPQueueDestroy(bqp);
+	}
+
+
+
+	DestroySppointArray(pointsArr,5);
+	DestroyKDArray(firstKDDrray, 5);
+
+	if (!good) return logicproblem;
+	return succeeded;
 }
 
 
-/*
+
 int main(int argc, char **argv) {
 	printf("test started\n");
 
 	//init
-	if (SPKDTree_Init_Test() == succeeded){
+	if (SPKDTree_Test(true) == succeeded){
 		printf("Init TIL BALISTI\n");
+	}
+
+	//search
+	if (SPKDTree_Test(false) == succeeded){
+		printf("Search TIL BALISTI\n");
 	}
 
 
 	return 0;
-}*/
+}
