@@ -40,7 +40,7 @@ void printDefaultValueError(int line, const char *file, SP_CONFIG_MSG msg) {
     } else if (msg == SP_CONFIG_MISSING_NUM_IMAGES) {
         paramName = "spNumOfImages";
     }
-    sprintf(formattedString, PARAMETER_NOT_SET_ERROR, paramName);
+    sprintf(formattedString, R_PARAMETER_NOT_SET_ERROR, paramName);
     printError(line, file, formattedString);
 }
 

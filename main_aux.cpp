@@ -10,26 +10,21 @@ void removeNewline(char s1[]) {
 	}
 }
 
-int cmpfunc(const void *a, const void *b) {
-    return (*(int *) a - *(int *) b);
+
+void destroySPPointMatrix(SPPoint ***spPointMatrix, int *pointsExtractInPic, int whereTofree) {
+	for (int i = 0; i < whereTofree; i++) {
+		for (int j = 0; j < pointsExtractInPic[i]; j++) {
+			if (spPointMatrix[i][j] != NULL) {
+				spPointDestroy(spPointMatrix[i][j]);
+			}
+		}
+		if (spPointMatrix[i] != NULL) {
+			free(spPointMatrix[i]);
+		}
+	}
+
+	free(spPointMatrix);
+	free(pointsExtractInPic);
 }
 
-// Free all points in matrix
-// Free the rows of the matrix & matrix itself
-// Free
-//void DestroyspPointMatrix(SPPoint ***spPointMatrix,int* pointsExtractInPic,int whereTofree) {
-//	for (int i = 0; i < whereTofree; i++) {
-//		for (int j = 0; j < pointsExtractInPic[i]; j++) {
-//			if (spPointMatrix[i][j] != NULL) {
-//				spPointDestroy(spPointMatrix[i][j]);
-//			}
-//		}
-//		if (spPointMatrix[i] != NULL) {
-//			free(spPointMatrix[i]);
-//		}
-//	}
-//
-//	free(spPointMatrix);
-//	free (pointsExtractInPic);
-//}
 

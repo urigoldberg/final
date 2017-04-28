@@ -22,7 +22,7 @@ SP_LOGGER_MSG spLoggerCreate(const char* filename, SP_LOGGER_LEVEL level) {
 	}
 	logger = (SPLogger) malloc(sizeof(*logger));
 	if (logger == NULL) { //Allocation failure
-		printf(LOGGER_OUT_OF_MEMORY_ERROR);
+		printf(R_LOGGER_OUT_OF_MEMORY_ERROR);
 		return SP_LOGGER_OUT_OF_MEMORY;
 	}
 	logger->level = level; //Set the level of the logger
@@ -34,7 +34,7 @@ SP_LOGGER_MSG spLoggerCreate(const char* filename, SP_LOGGER_LEVEL level) {
 		if (logger->outputChannel == NULL) { //Open failed
 			free(logger);
 			logger = NULL;
-			printf(LOGGER_CANNOT_OPEN_FILE_ERROR);
+			printf(R_LOGGER_CANNOT_OPEN_FILE_ERROR);
 			return SP_LOGGER_CANNOT_OPEN_FILE;
 		}
 		logger->isStdOut = false;
