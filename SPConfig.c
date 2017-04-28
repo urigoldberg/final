@@ -192,7 +192,7 @@ SP_CONFIG_MSG handleLine(SPConfig config, char *line, int lineIndex,
     tmpWord = strtok(tmpLine, " ");
     strcpy(lineNoSpaces, "");
     wordCounter = 0;
-    while (tmpWord != NULL) {
+    while (tmpWord != NULL && strcmp(tmpWord, "\n") != 0) {
         wordCounter++;
         strcat(lineNoSpaces, tmpWord);
         tmpWord = strtok(NULL, " ");
