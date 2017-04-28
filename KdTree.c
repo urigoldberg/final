@@ -1,5 +1,4 @@
-#include "kdTree.h"
-#include "SPPoint.h"
+#include "KdTree.h"
 #include <time.h>
 
 #define POINTSNUMBER 3
@@ -95,11 +94,11 @@ int FindMaxSpread(int columns, int rows, SPKDArray *kdArray) {
 
     //search max spread
     for (int i = 0; i < rows; i++) {
-        int indexOfMinPoint = (int) kdArray->sortedMatrix[i][0];
-        int indexOfMaxPoint = (int) kdArray->sortedMatrix[i][columns - 1];
+        int indexOfMinPoint = kdArray->sortedMatrix[i][0];
+        int indexOfMaxPoint = kdArray->sortedMatrix[i][columns - 1];
 
-        int minIndex = spPointGetAxisCoor(kdArray->pointsArr[indexOfMinPoint], i);
-        int maxIndex = spPointGetAxisCoor(kdArray->pointsArr[indexOfMaxPoint], i);
+        double minIndex = spPointGetAxisCoor(kdArray->pointsArr[indexOfMinPoint], i);
+        double maxIndex = spPointGetAxisCoor(kdArray->pointsArr[indexOfMaxPoint], i);
 
         //if there are several candidates choose the lowest dimension
         if ((maxIndex - minIndex) > max) {
@@ -123,7 +122,7 @@ int FindMaxSpread(int columns, int rows, SPKDArray *kdArray) {
 int SortByPointsIndex(const void *a, const void *b) {
     tempRowForSort First = (*(tempRowForSort *) a);
     tempRowForSort Second = (*(tempRowForSort *) b);
-    return (First.Coor - Second.Coor);
+    return First.Coor - Second.Coor == 0 ? 0 : (First.Coor - Second.Coor < 0 ? -1 : 1);
 }
 
 
@@ -360,7 +359,7 @@ int Split(SPKDArray *kdArr, SPKDArray **left, SPKDArray **right, int coor) {
  ***************
  */
 
-KDTreeNode *InitKdTreeNode(int Dim, int Val, KDTreeNode *Left, KDTreeNode *Right, SPPoint *Data) {
+KDTreeNode *InitKdTreeNode(int Dim, double Val, KDTreeNode *Left, KDTreeNode *Right, SPPoint *Data) {
 
     KDTreeNode *res = (KDTreeNode *) calloc(1, sizeof(KDTreeNode));
     if (res == NULL) {
@@ -386,7 +385,7 @@ KDTreeNode *InitKdTreeNode(int Dim, int Val, KDTreeNode *Left, KDTreeNode *Right
     return res;
 }
 
-KDTreeNode *InitKdTreeFromKdArray(SPKDArray *kdArray, spKDTreeSplitMethod SpCriteria, int forINCREMENTAL) {
+KDTreeNode *InitKdTreeFromKdArray(SPKDArray *kdArray, spKDTreeSplitMethod SpCriteria, int forINCREMENTAL, int PcadDimension) {
 
     //Asserts
     if (kdArray == NULL || kdArray->pointsArr == NULL || kdArray->sortedMatrix == NULL) {
@@ -400,16 +399,15 @@ KDTreeNode *InitKdTreeFromKdArray(SPKDArray *kdArray, spKDTreeSplitMethod SpCrit
     }
 
     //find split index
-    int dimOfPoints = spPointGetDimension(kdArray->pointsArr[0]);
     int howManyPoints = kdArray->dim;
 
     int i_thRow;
     if (SpCriteria == MAX_SPREAD) {
-        i_thRow = FindMaxSpread(howManyPoints, dimOfPoints, kdArray);
+        i_thRow = FindMaxSpread(howManyPoints, PcadDimension, kdArray);
     } else if (SpCriteria == RANDOM) {
-        i_thRow = GetRandomIndex(dimOfPoints);
+        i_thRow = GetRandomIndex(PcadDimension);
     } else {
-        i_thRow = (forINCREMENTAL + 1) % dimOfPoints;
+        i_thRow = (forINCREMENTAL + 1) % PcadDimension;
     }
 
     //create tree
@@ -425,14 +423,14 @@ KDTreeNode *InitKdTreeFromKdArray(SPKDArray *kdArray, spKDTreeSplitMethod SpCrit
 
 
     //create left tree
-    KDTreeNode *leftTree = InitKdTreeFromKdArray(leftArr, SpCriteria, i_thRow);
+    KDTreeNode *leftTree = InitKdTreeFromKdArray(leftArr, SpCriteria, i_thRow, PcadDimension);
     if (leftTree == NULL) {
         DestroyKDArray(rightArr, rightArr->dim);
         DestroyKDArray(leftArr, leftArr->dim);
         return NULL;
     }
 
-    KDTreeNode *rightTree = InitKdTreeFromKdArray(rightArr, SpCriteria, i_thRow);
+    KDTreeNode *rightTree = InitKdTreeFromKdArray(rightArr, SpCriteria, i_thRow, PcadDimension);
     if (rightTree == NULL) {
         DestroyKDArray(rightArr, rightArr->dim);
         DestroyKDArray(leftArr, leftArr->dim);
@@ -440,7 +438,7 @@ KDTreeNode *InitKdTreeFromKdArray(SPKDArray *kdArray, spKDTreeSplitMethod SpCrit
         return NULL;
     }
 
-    int ithMedian = kdArray->sortedMatrix[i_thRow][leftArr->dim];
+    double ithMedian = spPointGetAxisCoor(kdArray->pointsArr[kdArray->sortedMatrix[i_thRow][leftArr->dim]], i_thRow);
 
     KDTreeNode *res = InitKdTreeNode(i_thRow, ithMedian, leftTree, rightTree, NULL);
 

@@ -6,7 +6,7 @@
 #include <errno.h>
 #include <limits.h>
 #include <stdlib.h>
-#include "kdTree.h"
+#include "KdTree.h"
 #include "SPLogger.h"
 #include "main_aux.h"
 
@@ -37,7 +37,7 @@ typedef enum sp_config_msg_t {
 	INCREMENTAL,
 } SP_KD_TREE_SPLIT_METHOD;*/
 
-typedef struct sp_config_t* SPConfig;
+//typedef struct sp_config_t* SPConfig;
 
 typedef struct sp_config_t {
 	char spImagesDirectory[MAXBUF];
@@ -49,7 +49,7 @@ typedef struct sp_config_t {
 	int spNumOfFeatures;
 	bool spExtractionMode;
 	int spNumOfSimilarImages;
-	spKDTreeSplitMethod spKDTreeSplitMethod;
+	spKDTreeSplitMethod kdTreeSplitMethod;
 	int spKNN;
 	bool spMinimalGUI;
 	int spLoggerLevel;

@@ -1,7 +1,4 @@
 #include "SPLogger.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
 
 //File open mode
 #define SP_LOGGER_OPEN_MODE "w"
@@ -21,11 +18,11 @@ SP_LOGGER_MSG spLoggerCreate(const char* filename, SP_LOGGER_LEVEL level) {
 	}
 	logger = (SPLogger) malloc(sizeof(*logger));
 	if (logger == NULL) { //Allocation failure
-		printf(LOGGER_OUT_OF_MEMORY_ERROR);
+		printf(R_LOGGER_OUT_OF_MEMORY_ERROR);
 		return SP_LOGGER_OUT_OF_MEMORY;
 	}
 	logger->level = level; //Set the level of the logger
-	if (filename == NULL) { //In case the filename is not set use stdout
+	if (filename == NULL || strcmp(filename, "stdout") == 0) { //In case the filename is not set use stdout
 		logger->outputChannel = stdout;
 		logger->isStdOut = true;
 	} else { //Otherwise open the file in write mode
@@ -33,7 +30,7 @@ SP_LOGGER_MSG spLoggerCreate(const char* filename, SP_LOGGER_LEVEL level) {
 		if (logger->outputChannel == NULL) { //Open failed
 			free(logger);
 			logger = NULL;
-			printf(LOGGER_CANNOT_OPEN_FILE_ERROR);
+			printf(R_LOGGER_CANNOT_OPEN_FILE_ERROR);
 			return SP_LOGGER_CANNOT_OPEN_FILE;
 		}
 		logger->isStdOut = false;

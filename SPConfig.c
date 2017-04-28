@@ -1,20 +1,4 @@
-#include "SPconfig.h"
-
-
-int parseIntFromString(char *str, int *ptr) {
-    char *endptr;
-    errno = 0;
-    long result = strtol(str, &endptr, 10);
-
-    if (endptr == str) {
-        return -1;
-    }
-    if ((result == LONG_MAX || result == LONG_MIN) && errno == ERANGE) {
-        return -1;
-    }
-    *ptr = result;
-    return 0;
-}
+#include "SPConfig.h"
 
 void printError(int line, const char *file, char *msg) {
     printf("File: %s\nLine: %d\nMessage: %s\n", file, line, msg);
@@ -39,8 +23,10 @@ void printDefaultValueError(int line, const char *file, SP_CONFIG_MSG msg) {
         paramName = "spImagesSuffix";
     } else if (msg == SP_CONFIG_MISSING_NUM_IMAGES) {
         paramName = "spNumOfImages";
+    } else {
+        return;
     }
-    sprintf(formattedString, PARAMETER_NOT_SET_ERROR, paramName);
+    sprintf(formattedString, R_PARAMETER_NOT_SET_ERROR, paramName);
     printError(line, file, formattedString);
 }
 
@@ -67,7 +53,8 @@ SP_CONFIG_MSG insertToConfig(char key[MAXBUF], char value[MAXBUF],
     }
     if (strcmp(key, "spNumOfImages") == 0) {
         int numOfImages;
-        if (parseIntFromString(value, &numOfImages) != -1 && numOfImages > 0) {
+        numOfImages = atoi(value);
+        if (numOfImages > 0) {
             configObj->spNumOfImages = numOfImages;
             return SP_CONFIG_SUCCESS;
         } else {
@@ -77,9 +64,9 @@ SP_CONFIG_MSG insertToConfig(char key[MAXBUF], char value[MAXBUF],
     }
     if (strcmp(key, "spPCADimension") == 0) {
         int spPCADimansion;
-        if (parseIntFromString(value, &spPCADimansion) != -1
-            && spPCADimansion > 9 && spPCADimansion < 29) {
-            configObj->spPCADimension = strtol(value, NULL, 10);
+        spPCADimansion = atoi(value);
+        if (spPCADimansion > 9 && spPCADimansion < 29) {
+            configObj->spPCADimension = spPCADimansion;
             return SP_CONFIG_SUCCESS;
         } else {
             printConstraintError(lineIndex, filename);
@@ -92,9 +79,9 @@ SP_CONFIG_MSG insertToConfig(char key[MAXBUF], char value[MAXBUF],
     }
     if (strcmp(key, "spNumOfFeatures") == 0) {
         int spNumOfFeatures;
-        if (parseIntFromString(value, &spNumOfFeatures) != -1
-            && spNumOfFeatures > 0) {
-            configObj->spNumOfFeatures = strtol(value, NULL, 10);
+        spNumOfFeatures = atoi(value);
+        if (spNumOfFeatures > 0) {
+            configObj->spNumOfFeatures = spNumOfFeatures;
             return SP_CONFIG_SUCCESS;
         } else {
             printConstraintError(lineIndex, filename);
@@ -112,9 +99,9 @@ SP_CONFIG_MSG insertToConfig(char key[MAXBUF], char value[MAXBUF],
     }
     if (strcmp(key, "spNumOfSimilarImages") == 0) {
         int spNumOfSimilarImages;
-        if (parseIntFromString(value, &spNumOfSimilarImages) != -1
-            && spNumOfSimilarImages > 0) {
-            configObj->spNumOfSimilarImages = strtol(value, NULL, 10);
+        spNumOfSimilarImages = atoi(value);
+        if (spNumOfSimilarImages > 0) {
+            configObj->spNumOfSimilarImages = spNumOfSimilarImages;
             return SP_CONFIG_SUCCESS;
         } else {
             printConstraintError(lineIndex, filename);
@@ -123,15 +110,15 @@ SP_CONFIG_MSG insertToConfig(char key[MAXBUF], char value[MAXBUF],
     }
     if (strcmp(key, "spKDTreeSplitMethod") == 0) {
         if (strcmp(value, "RANDOM") == 0) {
-            configObj->spKDTreeSplitMethod = RANDOM;
+            configObj->kdTreeSplitMethod = RANDOM;
             return SP_CONFIG_SUCCESS;
         }
         if (strcmp(value, "MAX_SPREAD") == 0) {
-            configObj->spKDTreeSplitMethod = MAX_SPREAD;
+            configObj->kdTreeSplitMethod = MAX_SPREAD;
             return SP_CONFIG_SUCCESS;
         }
         if (strcmp(value, "INCREMENTAL") == 0) {
-            configObj->spKDTreeSplitMethod = INCREMENTAL;
+            configObj->kdTreeSplitMethod = INCREMENTAL;
             return SP_CONFIG_SUCCESS;
         } else {
             printConstraintError(lineIndex, filename);
@@ -140,8 +127,9 @@ SP_CONFIG_MSG insertToConfig(char key[MAXBUF], char value[MAXBUF],
     }
     if (strcmp(key, "spKNN") == 0) {
         int spKNN;
-        if (parseIntFromString(value, &spKNN) != -1 && spKNN > 0) {
-            configObj->spKNN = strtol(value, NULL, 10);
+        spKNN = atoi(value);
+        if (spKNN > 0) {
+            configObj->spKNN = spKNN;
             return SP_CONFIG_SUCCESS;
         } else {
             printConstraintError(lineIndex, filename);
@@ -159,10 +147,9 @@ SP_CONFIG_MSG insertToConfig(char key[MAXBUF], char value[MAXBUF],
     }
     if (strcmp(key, "spLoggerLevel") == 0) {
         int spLoggerLevel;
-        if (parseIntFromString(value, &spLoggerLevel) != -1
-            && (spLoggerLevel == 1 || spLoggerLevel == 2
-                || spLoggerLevel == 3 || spLoggerLevel == 4)) {
-            configObj->spKNN = strtol(value, NULL, 10);
+        spLoggerLevel = atoi(value);
+        if ((spLoggerLevel == 1 || spLoggerLevel == 2 || spLoggerLevel == 3 || spLoggerLevel == 4)) {
+            configObj->spLoggerLevel = spLoggerLevel;
             return SP_CONFIG_SUCCESS;
         } else {
             printConstraintError(lineIndex, filename);
@@ -192,7 +179,7 @@ SP_CONFIG_MSG handleLine(SPConfig config, char *line, int lineIndex,
     tmpWord = strtok(tmpLine, " ");
     strcpy(lineNoSpaces, "");
     wordCounter = 0;
-    while (tmpWord != NULL) {
+    while (tmpWord != NULL && strcmp(tmpWord, "\n") != 0) {
         wordCounter++;
         strcat(lineNoSpaces, tmpWord);
         tmpWord = strtok(NULL, " ");
@@ -202,7 +189,6 @@ SP_CONFIG_MSG handleLine(SPConfig config, char *line, int lineIndex,
         }
     }
 
-    wordCounter = 0;
     tmpWord = strtok(lineNoSpaces, "=");
     if (!tmpWord) {
         printInvalidLineError(lineIndex, filename);
@@ -264,7 +250,7 @@ SPConfig spConfigCreate(const char *filename, SP_CONFIG_MSG *msg) {
     res->spMinimalGUI = false;
     res->spNumOfSimilarImages = 1;
     res->spKNN = 1;
-    res->spKDTreeSplitMethod = MAX_SPREAD;
+    res->kdTreeSplitMethod = MAX_SPREAD;
     res->spLoggerLevel = 3;
     res->spImagesDirectory[0] = 0;
     res->spImagesPrefix[0] = 0;
@@ -388,10 +374,3 @@ SP_CONFIG_MSG spConfigGetPCAPath(char *pcaPath, const SPConfig config) {
 void spConfigDestroy(SPConfig config) {
     free(config);
 }
-
-
-
-
-
-
-

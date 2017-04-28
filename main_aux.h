@@ -1,27 +1,42 @@
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef MAIN_AUX_H_
 #define MAIN_AUX_H_
 
+#define R_ENTER_QUERY "Please enter an image path:\n"
+#define R_EXIT_MSG "Exiting...\n"
+#define EXIT_SIGN "<>"
+#define R_CANT_OPEN_CONFIG "The configuration file %s couldn't be open\n"
+#define R_BEST_CAND_ID "Best candidates for - %s - are:\n"
+#define R_INVALID_ARGS "Invalid command line : use -c <config_filename>\n"
+#define R_PARAMETER_NOT_SET_ERROR "Parameter %s is not set\n"
+#define R_LOGGER_OUT_OF_MEMORY_ERROR "Logger out of memory\n"
+#define R_LOGGER_CANNOT_OPEN_FILE_ERROR "Logger cannot open file\n"
+#define R_ALLOCATION_FAILURE_ERROR "Allocation failure\n"
 
+#define LOGGER_INIT_MSG "Logger initialized"
+#define POINT_MATRIX_INIT_MSG "Point matrix initialized"
+#define POINT_ARRAY_INIT_MSG "Point array initialized"
+#define KD_ARRAY_INIT_MSG "KDArray initialized"
+#define KD_TREE_INIT_MSG "KDTree initialized"
+#define EXTRAT_FATURES_ERROR_MSG "Error when trying to extract image features"
+#define INVALID_FEATURES_ERROR_MSG "Invalid feature"
 
-
-#define EnterQuery "Please enter an image path:\n"
-#define EXIT "Exiting..."
-#define EXITSIGN "<>"
-#define CANNTOPENCONFIG "The configuration file %s couldn't be open\n"
-#define BESTCANDID "Best candidates for - %s - are:\n"
-#define INVALID_ARGS "Invalid command line : use -c <config_filename>\n"
-#define PARAMETER_NOT_SET_ERROR "Parameter %s is not set\n"
-#define LOGGER_OUT_OF_MEMORY_ERROR "Logger out of memory\n"
-#define LOGGER_CANNOT_OPEN_FILE_ERROR "Logger cannot open file\n"
-#define ALLOCATION_FAILURE_ERROR "Allocation failure\n"
-
-
+#include "SPPoint.h"
+#include "SPBPriorityQueue.h"
+#include "SPLogger.h"
+#include "SPConfig.h"
+#include "KdTree.h"
 
 void removeNewline(char s1[]);
 
-int cmpfunc(const void *a, const void *b);
-
-void freeAll();
+void destroySPPointMatrix(SPPoint ***spPointMatrix, int *pointsExtractInPic, int whereTofree);
 
 #endif /* MAIN_AUX_H_ */
+
+#ifdef __cplusplus
+}
+#endif

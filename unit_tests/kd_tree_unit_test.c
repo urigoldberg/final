@@ -55,47 +55,47 @@ Errors SPKDTree_Test(bool init) {
 	if (init)
 	{
 		//create tree incremental
-		KDTreeNode* treeINCR = InitKdTreeFromKdArray(firstKDDrray, INCREMENTAL, 1);
+		KDTreeNode* treeINCR = InitKdTreeFromKdArray(firstKDDrray, INCREMENTAL, 1, 2);
 		DestroyKdTree(treeINCR);
 
-		KDTreeNode* treeRAND = InitKdTreeFromKdArray(firstKDDrray, RANDOM, 1);
+		KDTreeNode* treeRAND = InitKdTreeFromKdArray(firstKDDrray, RANDOM, 1, 2);
 		DestroyKdTree(treeRAND);
 
-		KDTreeNode* treeMAX = InitKdTreeFromKdArray(firstKDDrray,MAX_SPREAD , 1);
+		KDTreeNode* treeMAX = InitKdTreeFromKdArray(firstKDDrray,MAX_SPREAD , 1, 2);
 		DestroyKdTree(treeMAX);
 	}
 
 	else {
-	//create tree incremental
-	KDTreeNode* treeINCR = InitKdTreeFromKdArray(firstKDDrray, INCREMENTAL, 1);
+		//create tree incremental
+		KDTreeNode* treeINCR = InitKdTreeFromKdArray(firstKDDrray, INCREMENTAL, 1, 2);
 
 
-	SPBPQueue *bqp = spBPQueueCreate(3);
-	kNearestNeighbors(treeINCR, bqp, pointsArr[3]);
-	BPQueueElement element;
+		SPBPQueue *bqp = spBPQueueCreate(3);
+		kNearestNeighbors(treeINCR, bqp, pointsArr[3]);
+		BPQueueElement element;
 
-	short i = 0;
-	while (!spBPQueueIsEmpty(bqp)) {
-		spBPQueuePeek(bqp, &element);
-		spBPQueueDequeue(bqp);
-		if (i == 0) {
-			good = (element.index == 3);
-			if (!good) break;
+		short i = 0;
+		while (!spBPQueueIsEmpty(bqp)) {
+			spBPQueuePeek(bqp, &element);
+			spBPQueueDequeue(bqp);
+			if (i == 0) {
+				good = (element.index == 3);
+				if (!good) break;
+			}
+			else if (i == 1) {
+				good = (element.index == 2);
+				if (!good) break;
+			}
+			else {
+				good = (element.index == 4);
+				if (!good) break;
+			}
+			i++;
 		}
-		else if (i == 1) {
-			good = (element.index == 2);
-			if (!good) break;
-		}
-		else {
-			good = (element.index == 4);
-			if (!good) break;
-		}
-		i++;
-	}
 
 
-	DestroyKdTree(treeINCR);
-	spBPQueueDestroy(bqp);
+		DestroyKdTree(treeINCR);
+		spBPQueueDestroy(bqp);
 	}
 
 
@@ -109,19 +109,19 @@ Errors SPKDTree_Test(bool init) {
 
 
 
-//int main(int argc, char **argv) {
-//	printf("test started\n");
-//
-//	//init
-//	if (SPKDTree_Test(true) == succeeded){
-//		printf("Init TIL BALISTI\n");
-//	}
-//
-//	//search
-//	if (SPKDTree_Test(false) == succeeded){
-//		printf("Search TIL BALISTI\n");
-//	}
-//
-//
-//	return 0;
-//}
+int main(int argc, char **argv) {
+	printf("test started\n");
+
+	//init
+	if (SPKDTree_Test(true) == succeeded){
+		printf("Init TIL BALISTI\n");
+	}
+
+	//search
+	if (SPKDTree_Test(false) == succeeded){
+		printf("Search TIL BALISTI\n");
+	}
+
+
+	return 0;
+}

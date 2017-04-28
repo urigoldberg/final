@@ -1,11 +1,11 @@
+
+#ifndef KDTREE_H_
+#define KDTREE_H_
 #include "SPPoint.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "SPBPriorityQueue.h"
-#ifndef KDTREE_H_
-#define KDTREE_H_
-
 #define POINTSNUMBER 3
 
 /*
@@ -21,7 +21,7 @@ typedef struct SPKDArray {
 
  typedef struct KDTreeNode{
 	int Dim;
-	int Val;
+	double Val;
 	struct KDTreeNode *Left;
 	struct KDTreeNode *Right;
 	SPPoint *Data;
@@ -53,7 +53,9 @@ void DestroyKdTree (KDTreeNode* tree);
 
 void kNearestNeighbors(KDTreeNode *curr, SPBPQueue *bpq, SPPoint *point);
 
-KDTreeNode *InitKdTreeFromKdArray(SPKDArray *kdArray, spKDTreeSplitMethod SpCriteria, int forINCREMENTAL);
+KDTreeNode *InitKdTreeFromKdArray(SPKDArray *kdArray, spKDTreeSplitMethod SpCriteria, int forINCREMENTAL, int PcadDimension);
+
+int Split(SPKDArray *kdArr, SPKDArray **left, SPKDArray **right, int coor);
 
 void DestroyKDArray(SPKDArray *arr, int numOfPoints);
 

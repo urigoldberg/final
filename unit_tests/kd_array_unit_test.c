@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "unit_test_util.h" //SUPPORTING MACROS ASSERT_TRUE/ASSERT_FALSE etc..
-#include "../kdTree.h"
+#include "../KdTree.h"
 #include "../SPPoint.h"
 #include <time.h>
 #include <stdlib.h>

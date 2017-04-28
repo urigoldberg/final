@@ -5,7 +5,12 @@
 /**
  * SP Bounded Priority Queue summary
  *
- * TODO Complete documentation
+ * Fields -
+ * 1. int maxSize - max capacity of queue
+ * 2. int size - amount of elements in queue
+ * 3. BPQueueElement* queue - cyclic array of BPQueueElements
+ * 4. int start - for cyclic array
+ *
  */
 
 
