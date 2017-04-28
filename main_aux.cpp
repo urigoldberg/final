@@ -11,8 +11,8 @@ void removeNewline(char s1[]) {
 }
 
 
-void destroySPPointMatrix(SPPoint ***spPointMatrix, int *pointsExtractInPic, int whereTofree) {
-	for (int i = 0; i < whereTofree; i++) {
+void destroySPPointMatrix(SPPoint ***spPointMatrix, int *pointsExtractInPic, int untilIndex) {
+	for (int i = 0; i < untilIndex; i++) {
 		for (int j = 0; j < pointsExtractInPic[i]; j++) {
 			if (spPointMatrix[i][j] != NULL) {
 				spPointDestroy(spPointMatrix[i][j]);

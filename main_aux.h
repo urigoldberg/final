@@ -31,9 +31,25 @@ extern "C" {
 #include "SPConfig.h"
 #include "KdTree.h"
 
+/**
+ * removes the '\n' char in the end of the line
+ *
+ * @param s1 - the string
+ * @assert s1 != NULL
+ *
+ */
 void removeNewline(char s1[]);
 
-void destroySPPointMatrix(SPPoint ***spPointMatrix, int *pointsExtractInPic, int whereTofree);
+
+/**
+ * destroys the SPPoint matrix and frees all of the resources
+ *
+ * @param spPointMatrix - the matrix to be freed
+ * @assert spPointMatrix != NULL
+ * @param pointsExtractInPic - array of points that extracted from each picture
+ * @param untilIndex - until what index to destroy the matrix
+ */
+void destroySPPointMatrix(SPPoint ***spPointMatrix, int *pointsExtractInPic, int untilIndex);
 
 #endif /* MAIN_AUX_H_ */
 
