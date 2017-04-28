@@ -3,8 +3,6 @@
 #include "main_aux.h"
 #include "SPImageProc.h"
 
-
-
 int main(int argc, char **argv) {
 
     // variables
@@ -218,8 +216,6 @@ int main(int argc, char **argv) {
             }
         }
 
-
-
         DestroySppointArray(queryFeatures, queryNumOfFeatures);
         free(imgAppearanceCounterArr);
 
@@ -250,8 +246,7 @@ int main(int argc, char **argv) {
             // Show results (non) minimal gui
             if (config->spMinimalGUI) {
                 imageProc.showImage(path);
-//                getchar();
-                system("Pause");
+                getchar();
             } else {
                 printf("%s\n", path);
             }
@@ -260,7 +255,6 @@ int main(int argc, char **argv) {
         printf(R_ENTER_QUERY);
         fgets(query, 1024, stdin);
         removeNewline(query);
-
     }
 
     // Free All

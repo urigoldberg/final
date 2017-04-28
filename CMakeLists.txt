@@ -10,7 +10,6 @@ set(CMAKE_CXX_STANDARD 11)
 set(SOURCE_FILES
         unit_tests/kd_array_unit_test.c
         unit_tests/sp_logger_unit_test.c
-        unit_tests/tempTest.c
         unit_tests/unit_test_util.h
         unit_tests/kd_tree_unit_test.c
         KdTree.c
