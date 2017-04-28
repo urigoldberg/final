@@ -56,7 +56,7 @@ void DestroyKDArray(SPKDArray *arr, int numOfPoints) {
 
     if (arr->sortedMatrix != NULL) {
         for (int i = 0; i < dim; i++) {
-            free(arr->sortedMatrix[i]); //TODO check this kind of free. regular dosent work
+            free(arr->sortedMatrix[i]);
         }
 
         free(arr->sortedMatrix);
@@ -394,7 +394,6 @@ KDTreeNode *InitKdTreeFromKdArray(SPKDArray *kdArray, spKDTreeSplitMethod SpCrit
 
     //stop condition
     if (kdArray->dim == 1) {
-        //TODO check if valid
         return InitKdTreeNode(-1, -1, NULL, NULL, kdArray->pointsArr[0]);
     }
 
@@ -457,7 +456,6 @@ KDTreeNode *InitKdTreeFromKdArray(SPKDArray *kdArray, spKDTreeSplitMethod SpCrit
 
 }
 
-//TODO bpq will be initilaize outside
 void kNearestNeighbors(KDTreeNode *curr, SPBPQueue *bpq, SPPoint *point) {
 
     bool searchedLeftTree = false;

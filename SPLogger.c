@@ -50,7 +50,6 @@ void spLoggerDestroy() {
 }
 
 
-// TODO check if should malloc string or is it good like this
 SP_LOGGER_MSG spLoggerPrintError(const char* msg, const char* file,
 		const char* function, const int line) {
 	if (!logger) {
