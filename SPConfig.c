@@ -1,4 +1,4 @@
-#include "SPconfig.h"
+#include "SPConfig.h"
 
 
 int parseIntFromString(char *str, int *ptr) {

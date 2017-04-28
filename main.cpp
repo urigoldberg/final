@@ -11,7 +11,7 @@ extern "C" {
 #include "SPBPriorityQueue.h"
 #include "SPLogger.h"
 #include "SPConfig.h"
-#include "kdTree.h"
+#include "KdTree.h"
 }
 
 //include C++ source files
@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
 	// variables
     char query[1024];
     char dir[MAXBUF];
-    strcpy(dir, "../spcbir.config");
+    strcpy(dir, "./spcbir.config");
     bool usingDefaultConfigFile = true;
     SP_CONFIG_MSG msg;
     SPPoint **arrOfAllPoints = NULL;

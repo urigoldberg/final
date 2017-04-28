@@ -1,4 +1,4 @@
-#include "kdTree.h"
+#include "KdTree.h"
 #include "SPPoint.h"
 #include <time.h>
 

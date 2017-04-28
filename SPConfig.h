@@ -6,7 +6,7 @@
 #include <errno.h>
 #include <limits.h>
 #include <stdlib.h>
-#include "kdTree.h"
+#include "KdTree.h"
 #include "SPLogger.h"
 #include "main_aux.h"
 

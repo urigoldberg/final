@@ -12,8 +12,8 @@ set(SOURCE_FILES
         unit_tests/sp_logger_unit_test.c
         unit_tests/tempTest.c
         unit_tests/unit_test_util.h
-        kdTree.c
-        kdTree.h
+        KdTree.c
+        KdTree.h
         main.cpp
         SPBPriorityQueue.c
         SPBPriorityQueue.h

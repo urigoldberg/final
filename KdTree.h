@@ -1,11 +1,11 @@
+
+#ifndef KDTREE_H_
+#define KDTREE_H_
 #include "SPPoint.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "SPBPriorityQueue.h"
-#ifndef KDTREE_H_
-#define KDTREE_H_
-
 #define POINTSNUMBER 3
 
 /*
