@@ -138,14 +138,14 @@ static bool invalidValues() {
 }
 
 
-//int main() {
-//	RUN_TEST(basicLoggerTest);
-//	RUN_TEST(basicLoggerErrorTest);
-//	RUN_TEST(basicLoggerDebugTest);
-//	RUN_TEST(loggerDebugTestToConsole);
-//	RUN_TEST(invalidValues);
-//	RUN_TEST(basicLoggerMsgTest);
-//	RUN_TEST(basicLoggerInfoTest);
-//	RUN_TEST(basicLoggerWarningTest);
-//	return 0;
-//}
+int main() {
+	RUN_TEST(basicLoggerTest);
+	RUN_TEST(basicLoggerErrorTest);
+	RUN_TEST(basicLoggerDebugTest);
+	RUN_TEST(loggerDebugTestToConsole);
+	RUN_TEST(invalidValues);
+	RUN_TEST(basicLoggerMsgTest);
+	RUN_TEST(basicLoggerInfoTest);
+	RUN_TEST(basicLoggerWarningTest);
+	return 0;
+}
