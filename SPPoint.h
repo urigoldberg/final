@@ -25,15 +25,15 @@ typedef struct sp_point_t SPPoint;
 /**
  * Allocates a new point in the memory.
  * Given data array, dimension dim and an index.
- * The data array is copied (allocation needed)
+ * The data array is copied (allocation needed) 
  * to form the point P = (p_0,p_2,...,p_{dim-1})
  * such that the following holds
  *
  * - The ith coordinate of the P will be p_i
  * - p_i = data[i]
  * - The index of P = index
- *
- *
+ * 
+ * 
  * @return
  * NULL in case allocation failure ocurred OR data is NULL OR dim <=0 OR index <0
  * Otherwise, the new point is returned

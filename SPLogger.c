@@ -1,8 +1,4 @@
 #include "SPLogger.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
 
 //File open mode
 #define SP_LOGGER_OPEN_MODE "w"

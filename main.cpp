@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
 
     //logger Init
     SP_LOGGER_MSG loggerMsg;
-    loggerMsg = spLoggerCreate(config->spLoggerFilename, (SP_LOGGER_LEVEL) config->spLoggerLevel);\
+    loggerMsg = spLoggerCreate(config->spLoggerFilename, (SP_LOGGER_LEVEL) (config->spLoggerLevel-1));
     if (loggerMsg != SP_LOGGER_SUCCESS) {
         spConfigDestroy(config);
         return -1;

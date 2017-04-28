@@ -1,5 +1,4 @@
 #include "KdTree.h"
-#include "SPPoint.h"
 #include <time.h>
 
 #define POINTSNUMBER 3
@@ -123,7 +122,7 @@ int FindMaxSpread(int columns, int rows, SPKDArray *kdArray) {
 int SortByPointsIndex(const void *a, const void *b) {
     tempRowForSort First = (*(tempRowForSort *) a);
     tempRowForSort Second = (*(tempRowForSort *) b);
-    return (First.Coor - Second.Coor);
+    return First.Coor - Second.Coor == 0 ? 0 : (First.Coor - Second.Coor < 0 ? -1 : 1);
 }
 
 
