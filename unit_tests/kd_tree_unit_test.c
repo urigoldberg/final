@@ -116,10 +116,10 @@ static bool searchTest() {
 }
 
 
-//
-//int main(int argc, char **argv) {
-//
-//    RUN_TEST(initTest);
-//    RUN_TEST(searchTest);
-//	return 0;
-//}
+
+int main(int argc, char **argv) {
+
+    RUN_TEST(initTest);
+    RUN_TEST(searchTest);
+	return 0;
+}
