@@ -18,9 +18,9 @@ C_COMP_FLAG = -std=c99 -Wall -Wextra \
 
 $(EXEC): $(OBJS)
 	$(CPP) $(OBJS) -L$(LIBPATH) $(LIBS) -o $@
-main.o:  main.cpp main_aux.h SPPoint.h SPBPriorityQueue.h SPLogger.h SPConfig.h KdTree.h SPImageProc.h
+main.o: main.cpp main_aux.h SPPoint.h SPBPriorityQueue.h SPLogger.h SPConfig.h KdTree.h SPImageProc.h
 	$(CPP) $(CPP_COMP_FLAG) -I$(INCLUDEPATH) -c $*.cpp
-main_aux.o: main_aux.h main_aux.cpp main_aux.h SPPoint.h SPBPriorityQueue.h SPLogger.h SPConfig.h KdTree.h
+main_aux.o: main_aux.cpp main_aux.h SPPoint.h SPBPriorityQueue.h SPLogger.h SPConfig.h KdTree.h
 	$(CPP) $(CPP_COMP_FLAG) -I$(INCLUDEPATH) -c $*.cpp
 SPImageProc.o: SPImageProc.cpp SPImageProc.h SPConfig.h KdTree.h SPPoint.h SPBPriorityQueue.h SPLogger.h main_aux.h
 	$(CPP) $(CPP_COMP_FLAG) -I$(INCLUDEPATH) -c $*.cpp
