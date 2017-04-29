@@ -8,6 +8,7 @@ extern "C" {
 
 #define R_ENTER_QUERY "Please enter an image path:\n"
 #define R_EXIT_MSG "Exiting...\n"
+#define EXIT_MSG "Exiting..."
 #define EXIT_SIGN "<>"
 #define R_CANT_OPEN_CONFIG "The configuration file %s couldn't be open\n"
 #define R_BEST_CAND_ID "Best candidates for - %s - are:\n"
@@ -24,6 +25,7 @@ extern "C" {
 #define KD_TREE_INIT_MSG "KDTree initialized"
 #define EXTRAT_FATURES_ERROR_MSG "Error when trying to extract image features"
 #define INVALID_FEATURES_ERROR_MSG "Invalid feature"
+#define FREEING_RESOURCES_MSG "Freeing Resources"
 
 #include "SPPoint.h"
 #include "SPBPriorityQueue.h"

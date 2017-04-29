@@ -128,9 +128,11 @@ int main(int argc, char **argv) {
             spPointDestroy(spPointMatrix[i][j]);
             spPointMatrix[i][j] = NULL; // in case of memory problem try to free all in DestroyspPointMatrix
         }
+        spLoggerPrintDebug(FREEING_RESOURCES_MSG, __FILE__, __func__, __LINE__);
         free(spPointMatrix[i]);
         spPointMatrix[i] = NULL; // in case of memory problem try to free all in DestroyspPointMatrix
     }
+    spLoggerPrintDebug(FREEING_RESOURCES_MSG, __FILE__, __func__, __LINE__);
     free(spPointMatrix);
     free(pointsExtractInPic);
     spLoggerPrintDebug(POINT_ARRAY_INIT_MSG, __FILE__, __func__, __LINE__);
@@ -173,7 +175,6 @@ int main(int argc, char **argv) {
 
     // Execute query
     while (strcmp(query, EXIT_SIGN) != 0) {
-
         int *imgAppearanceCounterArr = (int *) calloc((size_t) config->spNumOfImages, sizeof(int));
 
         if (imgAppearanceCounterArr == NULL) {
@@ -215,13 +216,8 @@ int main(int argc, char **argv) {
                 imgAppearanceCounterArr[element.index]++;
             }
         }
-
-        DestroySppointArray(queryFeatures, queryNumOfFeatures);
-        free(imgAppearanceCounterArr);
-
         // Find and print spNumOfSimilarImages
         for (i = 0; i < config->spNumOfSimilarImages; i++) {
-
             if (i == 0 && !config->spMinimalGUI) {
                 printf(R_BEST_CAND_ID, query);
             }
@@ -252,15 +248,20 @@ int main(int argc, char **argv) {
             }
 
         }
+        spLoggerPrintDebug(FREEING_RESOURCES_MSG, __FILE__, __func__, __LINE__);
+        DestroySppointArray(queryFeatures, queryNumOfFeatures);
+        free(imgAppearanceCounterArr);
         printf(R_ENTER_QUERY);
         fgets(query, 1024, stdin);
         removeNewline(query);
     }
 
     // Free All
+    spLoggerPrintDebug(FREEING_RESOURCES_MSG, __FILE__, __func__, __LINE__);
     spBPQueueDestroy(queue);
     DestroyKdTree(kdTree);
     free(config);
+    spLoggerPrintDebug(EXIT_MSG, __FILE__, __func__, __LINE__);
     printf(R_EXIT_MSG);
     return 0;
 
